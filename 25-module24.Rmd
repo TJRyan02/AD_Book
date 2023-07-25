@@ -46,6 +46,8 @@ This Part of the book imparts a variety of tools to use in this sort of situatio
 
 First, a note of clarification. Part XX of the book focuses on what data analysts call _functional form_ considerations, by which we mean ways of restructuring the right-hand side of a regression model (the $X$s) to make the model more useful---all while retaining Ordinary Least Squares as our estimation approach. Although OLS is extremely flexible, there are also occasional circumstances that call for other estimation approaches, such as a tool called the Logit model. We will occasionally call your attention to circumstances that would present problems for OLS estimation, so you have a sense of when you will need to acquire additional tools. But, a detailed discussion of estimation procedures beyond OLS will mostly be beyond our scope.
 
+Edit
+
 # Module 24: Dummy variables in regression
 
 **Learning goal**: Understand how to incorporate dummy variables into a regression model, and to interpret the ensuing results.
