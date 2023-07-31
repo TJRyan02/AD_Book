@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.5.19)  31 JUL 2023 13:14
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.5.19)  31 JUL 2023 14:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -996,12 +996,6 @@ Overfull \hbox (48.75pt too wide) in paragraph at lines 571--571
 LaTeX Warning: Reference `fig:dummy2plots' on page 28 undefined on input line 5
 99.
 
-
-Overfull \hbox (24.59001pt too wide) in paragraph at lines 599--600
-[]\TU/lmr/m/n/10 One year of increased age is associated with a {r abs(round(mo
-del6$coefficients[2],2))}-
- []
-
 File: APA_Book_files/figure-latex/dummy2plots-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/dummy2plots-1.pdf>
 
@@ -1018,8 +1012,8 @@ LaTeX Warning: There were undefined references.
  ) 
 Here is how much of TeX's memory you used:
  19348 strings out of 476179
- 357568 string characters out of 5809544
- 833070 words of memory out of 5000000
+ 357555 string characters out of 5809544
+ 833115 words of memory out of 5000000
  39801 multiletter control sequences out of 15000+600000
  475750 words of font info for 86 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191

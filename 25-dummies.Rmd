@@ -10,7 +10,7 @@ Of course, things might not be so simple. For one thing, political views can cha
 
 Let's examine how generational divides applied to candidate preferences in the most recent (2020) presidential election. To do so, we will turn to the 2020 American National Election Study (ANES). The ANES is a high-quality academic survey that has been conducted surrounding every American presidential election since 1948. All of the data and procedural details can be found at [https://electionstudies.org/](https://electionstudies.org/). The ANES customarily asks its respondents to report their feelings toward each of the main presidential candidates using an approach called a "feeling thermometer." For the feeling thermometer, respondents indicate, on a 0-100 scale, how much they like or dislike each candidate. A response of 0 indicates extreme disliking, a response of 100 indicates extreme liking, and a response of 50 indicates perfectly neutral feelings. Since the ANES asked about both Joe Biden and Donald Trump, we can subtract one response from the other to obtain a difference score---liking of Joe Biden _relative to_ Donald Trump. (Negative values on this measure will indicate the respondent likes Donald Trump more than Joe Biden.) The "lumpiness" in the resulting distribution results from the tendency of respondents to answer in "round numbers" (numbers ending in 0) when responding to the feeling thermometer questions. 
 
-``` {r, warning=FALSE, message = FALSE, include = TRUE, fig.cap = "ANES"}
+``` {r, warning=FALSE, message = FALSE, include = TRUE, fig.cap = "Distribution of the biden-df variable in the ANES."}
 library(tidyverse)
 library(ggplot2)
 library(gridExtra)
@@ -133,7 +133,7 @@ knitr::kable(
 )
 ```
 
-The means are shown in Table \@ref(tab:agemeans1). To estimate a regression model, we simply include our new dummy variables as regressors. Importantly, we will leave one out: `age_18_29`. We will discuss why this is necessary in section XX. 
+The means are shown in Table \@ref(tab:agemeans1). To estimate a regression model, we simply include our new dummy variables as regressors. Importantly, we will leave one out: `age_18_29`. We will discuss why this is necessary in section \@ref(refcats). 
 
 ``` {r, echo = TRUE}
 model2 <- lm(biden_dif ~ age30_39 + age40_49 + age50_59 + age60plus, data = df)
@@ -169,7 +169,7 @@ p3
 
 Take a minute to compare Figure \@ref(fig:agedum5) to the regression results in `model3`, noting how they relate to each other. Again, the intercept tells us the mean of the `age18_29` category, and the coefficients tell us what addition or subtraction would need to be applied to arrive at the mean of another category.
 
-## Reference categories
+## Reference categories {#refcats}
 
 Above, we noted that `model2` excluded one of our dummy variables, `age18_29`. Why? Let's see what would have happened if we had included it.
 
@@ -185,7 +185,7 @@ Of course, as you can see, the intercept term has been estimated, these realitie
 
 We can now see not only that all the regression coefficients changed. We can understand why they changed the way they did. It is no coincidence that the new intercept term, `r round(model2alt$coefficients[1],3)` is identical to the mean of the 60+ category in Table \@ref(tab:agemeans1). In `model2a`, the intercept term represents the mean outcome in the 60+ category. And, all the other coefficients have changed to accommodate this new reference point. For instance, the slope associated with the 50-59 category is `r round(model2alt$coefficients[5],3)` because the mean of this category is `r round(meanstab[5,2],3)` and `r round(model2alt$coefficients[1],3)` -- `round(model2alt$coefficients[5],3)` = `r round(meanstab[5,2],3)`. Put differently, while `model2` and `model2a` look quite different, they are exactly the same in the sense that, interpreted appropriately, they would lead us to exactly the same conclusions about how age relates to feelings about presidential candidates.
 
-Why was none of this a problem when we estimated `model3`, which had the same age categories estimated via a factor variable? It was no problem because the issue is routine enough that, when R encounters a factor variable in a regression, it knows to exclude one of the factor levels---the level represented by the number 1. It is possible to override this behavior with the relevel command, as in:
+Why was none of this a problem when we estimated `model3`, which had the same age categories estimated via a factor variable? It was no problem because the issue is routine enough that, when R encounters a factor variable in a regression, it knows to exclude one of the factor levels---the level represented by the number 1. It is possible to change the reference category with the relevel command, as in:
 
 ``` {r echo=T, eval=F}
 df$agefactor <- relevel(df$agefactor, ref=5)
@@ -226,7 +226,7 @@ model6 <- lm(biden_dif ~ age, data=df)
 model6
 ```
 
-One year of increased age is associated with a {r abs(round(model6$coefficients[2],2))}-point shift in Trump's favor. Let us compare the predictions this model would generate to those from out five-category dummy model (``model3``). In Figure \@ref(fig:dummy2plots), Panel (a) represents ``model6``, and Panel (b) represents ``model3``.
+One year of increased age is associated with a `r abs(round(model6$coefficients[2],2))`-point shift in Trump's favor. Let us compare the predictions this model would generate to those from out five-category dummy model (``model3``). In Figure \@ref(fig:dummy2plots), Panel (a) represents ``model6``, and Panel (b) represents ``model3``.
 
 ``` {r dummy2plotsprep, warning=F, echo=F, message=F}
 p4a <- ggplot(df, aes(x = age, y = biden_dif)) +
