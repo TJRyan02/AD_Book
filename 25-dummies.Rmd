@@ -1,0 +1,256 @@
+# Dummy variables in regression
+
+**Learning goal**: Understand what dummy variables are, how they can be incorporated into a regression model, and how to interpret the ensuing results.
+
+In 2014, the Pew Research Center published the [results](https://www.pewresearch.org/short-reads/2014/09/25/the-gops-millennial-problem-runs-deep/) of a poll presaging long-term trouble for the Republican Party. They asked Americans' opinions about several of political topics---the environment, homosexuality, immigration, and social welfare spending, for some examples. On issue after issue, the youngest generation (people 33 years old or younger) were substantially more progressive than older age cohorts. Results like this have led a number of analysts to speculate that generational replacement---the natural tendency for older people to die and be replaced by younger people---will make it [difficult](https://thehill.com/homenews/campaign/3786819-gop-sounds-alarm-over-struggles-with-gen-z-voters/) for the Republican Party to stay competitive in national elections.
+
+Of course, things might not be so simple. For one thing, political views can change over time. Additionally, opinions about specific issues like the environment do not always map cleanly onto vote choices. For instance, a person might have progressive views about the environment, but appreciate the bombastic, anti-establishment style of a particular political candidate. 
+
+## The generational divide in 2020 {#gen2020}
+
+Let's examine how generational divides applied to candidate preferences in the most recent (2020) presidential election. To do so, we will turn to the 2020 American National Election Study (ANES). The ANES is a high-quality academic survey that has been conducted surrounding every American presidential election since 1948. All of the data and procedural details can be found at [https://electionstudies.org/](https://electionstudies.org/). The ANES customarily asks its respondents to report their feelings toward each of the main presidential candidates using an approach called a "feeling thermometer." For the feeling thermometer, respondents indicate, on a 0-100 scale, how much they like or dislike each candidate. A response of 0 indicates extreme disliking, a response of 100 indicates extreme liking, and a response of 50 indicates perfectly neutral feelings. Since the ANES asked about both Joe Biden and Donald Trump, we can subtract one response from the other to obtain a difference score---liking of Joe Biden _relative to_ Donald Trump. (Negative values on this measure will indicate the respondent likes Donald Trump more than Joe Biden.) The "lumpiness" in the resulting distribution results from the tendency of respondents to answer in "round numbers" (numbers ending in 0) when responding to the feeling thermometer questions.
+
+``` {r, warning=FALSE, message = FALSE, include = TRUE, fig.cap = "ANES"}
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(ggpubr)
+options(pillar.sigfig = 4) # Set the number of digits to display in examples.
+
+df <- read_csv("datasets/2020anes.csv")
+
+df$biden_dif <- df$biden_therm - df$trump_therm
+p <- ggplot(df, aes(x=biden_dif)) + geom_histogram()
+p
+```
+
+Our working hypothesis is that people 33 years old or younger will, on average, have higher scores on the `biden_dif` variable than people who are 34 years old or older. You already have several tools for assessing this hypothesis, such as by creating data subsets (Module XX). But our present purpose is to develop facility using dummy variables. 
+
+> A **dummy variable** is a variable that takes only two values---0 or 1---and is used to mark a subset of data.
+
+<!-- Add some remarks here about how this relates to things already covered, like factor variables.-->
+
+You might have noticed that there are several closely related terms. Dummy variables are nearly synonymous with _binary variables_. In our minds the difference is one of connotation: "dummy variable" is used to describe a binary variable being used as an independent variable, especially in a regression context. If we were in a scenario where a binary variable were the outcome (the $Y$, rather than an $X$), we probably would not call it a dummy variable---but if we did, most people would understand our meaning. _Boolean_ or _Logical_ variables refer to variables that only take the values `FALSE` or `TRUE`, as opposed to 0 or 1. Of course this distinction can be blurred by the fact that R automatically interprets `FALSE` as 0 and `TRUE` as 1 if it can (Section XX), so the two can sometimes be used interchangeably.
+
+Let us create a dummy variable that divides our respondents by age.
+
+``` {r, include = TRUE, warning = FALSE}
+df$older[df$age<=33] <- 0
+df$older[df$age>33] <- 1
+```
+
+`df$older` is a dummy variable that divides our respondents into two groups: those 33 and younger, and those 34 or older. You already know a few ways we could use it to calculate means of the `df$biden_df` variable within subsets. We'll do it the tidyverse way, which leads to nicer output.
+
+``` {r echo = TRUE}
+means <- df %>%
+  group_by(older) %>%
+  summarize(biden_therm = mean(biden_dif, na.rm = TRUE))
+means
+```
+
+Young people (`df$older==0`) like Biden `r round(means[1,2],2)` thermometer points more than Trump. Older people (`df$older==1`) like Biden `r round(means[2,2],2)` points more than Trump. Thus, we have support for the predicted generational divide: young people are more favorable toward Biden than older people, though the difference is fairly small (`r abs(round(means[1,2] - means[2,2],2))` points). (People for whom we are missing age information slightly prefer Trump to Biden.)
+
+## A regression with one dummy
+
+We've tentatively answered our research question, but the purpose of this module is to learn how to use dummy variables in regression. To begin this discussion, let's estimate a regression using the exact components we already have.
+
+``` {r include = TRUE}
+model1 <- lm(biden_dif ~ older, data = df)
+model1 # We don't currently need the more elaborate results produced by summary(model1)
+```
+`model1` only has one $X$ variable, so it makes sense that the regression produces one intercept and one slope coefficient. Let's think about what each means in the present context.
+
+The intercept means what it always means in an OLS model: the predicted value of the outcome when all $X$ variables take a value of zero. But this setup is conducive to noticing three additional useful things:
+
+1. With just one dummy variable in the mix, "when all $X$ variables take a value of zero" has a clear substantive meaning. When we think about "when all $X$ variables take a value of zero," we're talking about the people we have classified as young.
+
+2. The predicted value (`r round(model1$coefficients[1], 2)`) is identical to the mean we calculated in section \@ref(gen2020). This is no coincidence. The intercept is not _always_ equivalent to the mean $Y$ value of the observations for which $X=0$. (Observations for which $X=0$ don't even need to exist.) But in the current setup, the rules of regression foreordained that this would happen.
+
+3. The estimated slope is identical to the difference in means we calculated in section \@ref(gen2020). Again, in the current setup, this result was foreordained.
+
+Once these insights sink in, it becomes clear that entering a dummy variable as a predictor in a regression model is a straightforward way to compare means (of the outcome) across groups (those defined by the dummy variable). The easiest way to see why is to visualize how the rules of fitting a regression line unfold in the current context.
+
+``` {r dummy1, message = FALSE, warning = FALSE, fig.cap = "Regression fit to a single dummy variable. Note: y-axis truncated; points horizontally jittered."}
+p2 <- ggplot(df, aes(x = older, y = biden_dif)) + 
+  geom_jitter(width = .02, size = 0.25) + 
+  stat_smooth(method = "lm", se = FALSE, color="black", linewidth=.5) +
+ coord_cartesian(ylim = c(-5, 20)) # This line "zooms in" on the middle of our graph, which makes it easier to interpret.
+p2
+```
+
+Figure \@ref(fig:dummy1) illustrates what happened when we estimated `model1`. Our scatter plot includes points over only two $X$ values: 0 and 1. (Our code adds a small horizontal "jitter" to better depict their density. Otherwise hundreds of data points would pile on the same spot and appear as one.) In determining where the regression line should pass through the points residing over $X=0$, it makes intuitive sense that the answer would be, "the mean of $Y$ among points for which $X=0$". And, in determining where the regression line should pass through the points residing over $X=1$, it makes intuitive sense that the answer would be, "the mean of $Y$ among points for which $X=1$." We could show that, aside from making intuitive sense, this result is formally correct, in that such a line---one that passes through $\overline Y|X=0$ and $\overline Y|X=1$ is the one and only line that will minimize the Sum of Squared Residuals.
+
+If the regression line necessarily passes through $\overline Y|X=0$ and $\overline Y|X=1$, it follows that the slope of such a line must be… the difference in means. This can be seen in Figure \@ref(fig:dummy1): the line has a slope (`r round(model1$coefficients[1], 2)`) that is identical to the difference in means we calculated in Section \@ref(gen2020). This insight leads to this section's upshot:
+
+> **Upshot**: A regression with one dummy variable provides a straightforward way to estimate differences in group means via OLS regression. The intercept term will signify the mean of one group. The slope term will signify the difference in means. (And the mean of the second group can be calculated from these two numbers.)
+
+You might be thinking that this upshot is not very impressive. "I already knew how to compare means of different groups. Why did I need to learn a new way to do it?" This would be an understandable reaction. In fact, the upshot turns out to be extremely practical. First, although you already knew how to compare means between groups, the regression-based way makes it easy to conduct secondary analyses, such as examining whether the difference between group means is statistically significant (XX ref). Second, dummy variables can be used to make OLS much more flexible, as we will see next.
+
+## A regression with multiple dummies
+
+Our initial hypothesis---that people 33 and under have different feelings about the 2020 presidential candidates than people 34 or older---is rather simplistic. We can imagine some reasons that there would be a sharp division between people who are 33 and 34---perhaps there was an important even decades ago that affected people 34 and older, but not 33 and younger (since they were not yet born). But it seems much more likely that age differences are characterized by _gradual_ change as culture and values evolve, rather than an abrupt change all at once. Additionally, it was rather simplistic to lump together everyone from 34 to 80 into a single category.^[There are almost certainly people older than 80 in the ANES dataset, but the ANES "top codes" this variable at 80, meaning that people who are 80, 81, 99, or 105 would all be recorded as 80 in the dataset. This is to protect the anonymity of respondents. Since there are not many extremely old people, someone could plausibly use the age information to engage in "deductive identification"---inferring who a particular respondent is based on their survey responses.] That is a huge age range!
+
+We can incorporate dummy variables into our regression model in a way that is responsive to these concerns. The trick is to use more than one dummy. Next, we construct a dummy variable for each of several broad age ranges---18-29, 30-39, 40-49, 50-59, and 60 or older.
+
+``` {r, include = TRUE, echo = FALSE, warning = FALSE}
+df$age18_29[!is.na(df$age)] <- 0
+df$age30_39[!is.na(df$age)] <- 0
+df$age40_49[!is.na(df$age)] <- 0
+df$age50_59[!is.na(df$age)] <- 0
+df$age60plus[!is.na(df$age)] <- 0
+
+df$age18_29[df$age <= 29] <- 1
+df$age30_39[df$age >= 30 & df$age <= 39] <- 1
+df$age40_49[df$age >= 40 & df$age <= 49] <- 1
+df$age50_59[df$age >= 50 & df$age <= 59] <- 1
+df$age60plus[df$age >= 60] <- 1
+```
+
+Of course we can familiarize with the means of `df$biden_dif` in each of these categories.
+
+``` {r, echo = TRUE, include = TRUE, eval = FALSE}
+mean(df$biden_dif[df$age18_29==1], na.rm=TRUE)
+mean(df$biden_dif[df$age30_39==1], na.rm=TRUE)
+mean(df$biden_dif[df$age40_49==1], na.rm=TRUE)
+mean(df$biden_dif[df$age50_59==1], na.rm=TRUE)
+mean(df$biden_dif[df$age60plus==1], na.rm=TRUE)
+```
+``` {r, include = FALSE}
+df$agefactor <- cut(df$age, breaks = c(0,29,39,49,59,99))
+meanstab <- df %>%
+  group_by(agefactor) %>%
+  summarize(mean = mean(biden_dif, na.rm=TRUE))
+levels(meanstab$agefactor) <- c("18-29", "30-39","40-49","50-59","60+")
+meanstab <- meanstab %>%
+  rename(age_range = agefactor) %>%
+  filter(!is.na(age_range))
+df$agefactor<-NULL
+```
+
+``` {r agemeans1, echo = FALSE}
+knitr::kable(
+  meanstab, booktabs = TRUE, digits = 2, caption = "Means of biden-df, by age" # Need to figure out how to do underscore.
+)
+```
+
+The means are shown in Table \@ref(tab:agemeans1). To estimate a regression model, we simply include our new dummy variables as regressors. Importantly, we will leave one out: `age_18_29`. We will discuss why this is necessary in section XX. 
+
+``` {r, echo = TRUE}
+model2 <- lm(biden_dif ~ age30_39 + age40_49 + age50_59 + age60plus, data = df)
+model2
+```
+
+Do you see how the regression results relate to the means reported in Table \@ref(tab:agemeans1)? The intercept is identical to the mean in the 18-29 category. And each coefficient represents the difference between the mean in the 18-29 category and some other category. For instance, the coefficient associated with the `age40_49` category is `r round(model2$coefficients[3],3)` because `r round(model2$coefficients[1],3)` -- `r abs(round(model2$coefficients[3], 3))` = `r round(meanstab[3,2], 2)`. That leads us to this section's upshot:
+
+> **Upshot**: When a regression model is comprised of dummy variables representing mutually exclusive categories, the regression line will pass through the mean value (of the dependent variable) for each category.
+
+One drawback to the analysis as we have conducted in this section is that R has no understanding of the ordering of the dummy variables we created. For instance, it does not understand `age20_29` to represent a conceptually lower category than `age40_49`. We coded things as we did to be as transparent as possible about what dummy variables do. But in practice, a faster and more natural way to conduct this same analysis would be to make a factor variable that represents our desired age bands:
+
+``` {r}
+df$agefactor <- cut(df$age, breaks = c(0,29,39,49,59,99)) # Create age categories
+model3 <- lm(biden_dif ~ agefactor, data = df)
+model3
+```
+
+As you can see, `model3` is identical to `model2`. It is identical because when R encounters a factor variable in a regression model, it converts it to be a series of dummy variables---one for each factor level. This is convenient. The approach for `model3` required much less code. And, because R understands the ordering of the age categories, they can now be plotted fairly easily.
+
+``` {r agedum5, fig.cap = "Means of `biden_dif` for five broad age groups."}
+meanstab <- df %>%
+  group_by(agefactor) %>%
+  summarize(mean = mean(biden_dif, na.rm=TRUE)) %>%
+  filter(!is.na(agefactor)) # Filter NAs for simplicity
+
+p3 <- ggplot(meanstab, aes(x=agefactor, y=mean, group = 1)) + # group=1 is required for a line plot of this sort, for R to know that our dataset includes only one group.
+  geom_line() + 
+  geom_point() + 
+  coord_cartesian(ylim = c(-5, 20)) # Make sure that the plot includes y=0, for reference.
+p3
+```
+
+Take a minute to compare Figure \@ref(fig:agedum5) to the regression results in `model3`, noting how they relate to each other. Again, the intercept tells us the mean of the `age18_29` category, and the coefficients tell us what addition or subtraction would need to be applied to arrive at the mean of another category.
+
+## Reference categories
+
+Above, we noted that `model2` excluded one of our dummy variables, `age18_29`. Why? Let's see what would have happened if we had included it.
+
+``` {r}
+model2alt <- lm(biden_dif ~ age18_29 + age30_39 + age40_49 + age50_59 + age60plus, data = df)
+model2alt
+```
+R estimates a model, but the results are different than before. And the `age60plus` variable no longer has a coefficient associated with it. What's going on?
+
+One way to understand what's going on is to understand that regression models *must* have an intercept. After all, all lines (except perfectly vertical lines) must cross the y-axis _somewhere_.^[While all regression lines have a y-intercept, it is possible to estimate a model without an intercept term. In this case, the regression line will, implicitly, run through the origin---(0,0) in 2-dimensional space. Estimating an OLS model without an intercept term is quite unconventional, and we won't need to cover it any more.] And furthermore, the OLS procedure requires some data with which to estimate what this intercept term should be. It can't use any observations for which _any_ of the included dummy variables are = 1 to estimate the intercept. As we have just seen these observations are being used to estimate how within-group means compare _to_ an estimated intercept. So the problem we have run into is that, when dummy variables mark _all_ the observations in a dataset, the are no observations left with which to estimate an intercept term.
+
+Of course, as you can see, the intercept term has been estimated, these realities notwithstanding. The reason this happened is that R resolves the conundrum we describe in the paragraph above simply by tossing one variable overboard---in this case the `age60plus` variable. It gives up estimating a coefficient for this variable, thereby reserving some observations with which to estimate the intercept.
+
+We can now see not only that all the regression coefficients changed. We can understand why they changed the way they did. It is no coincidence that the new intercept term, `r round(model2alt$coefficients[1],3)` is identical to the mean of the 60+ category in Table \@ref(tab:agemeans1). In `model2a`, the intercept term represents the mean outcome in the 60+ category. And, all the other coefficients have changed to accommodate this new reference point. For instance, the slope associated with the 50-59 category is `r round(model2alt$coefficients[5],3)` because the mean of this category is `r round(meanstab[5,2],3)` and `r round(model2alt$coefficients[1],3)` -- `round(model2alt$coefficients[5],3)` = `r round(meanstab[5,2],3)`. Put differently, while `model2` and `model2a` look quite different, they are exactly the same in the sense that, interpreted appropriately, they would lead us to exactly the same conclusions about how age relates to feelings about presidential candidates.
+
+Why was none of this a problem when we estimated `model3`, which had the same age categories estimated via a factor variable? It was no problem because the issue is routine enough that, when R encounters a factor variable in a regression, it knows to exclude one of the factor levels---the level represented by the number 1. It is possible to override this behavior with the relevel command, as in:
+
+``` {r echo=T, eval=F}
+df$agefactor <- relevel(df$agefactor, ref=5)
+model3b <- lm(biden_dif ~ agefactor, data = df)
+model3b
+```
+
+The results in `model3b` (not shown) look identical to `model2b`.
+
+We are ready for this subsection's upshot:
+
+>**Upshot**: When using dummy variables in regression analysis to make comparisons across categories requires one of the categories to serve as a reference. The **reference category**, sometimes called the "excluded" category, is the category represented by the intercept term.
+
+It is important to understand how references categories work because they are essential context for understanding other results in the regression model. For instance, it is not possible to say what the `age40_49` coefficient `r round(model2$coefficients[3],3)` in `model2` means without knowing what the reference category is. The coefficient represents a difference… but compared to what?
+
+An additional reason that close attention to reference categories is important is that they are a common locus of data reporting mistakes. Note that earlier in this section, we carefully handled `NA` values---people whose age information in the ANES is missing for one reason or another. Because we were careful about it, we know that the intercept terms in the models represent people who described themselves as being 18--29 years old. If we had been less scrupulous, we could have wound up with a reference category that represented _both_ people in the 18--29 range _and_ people who simply did not report their age. In this circumstance, the intercept term would be difficult to interpret---it would represent the average outcome within a poorly-defined group. And because the intercept term would be semi-meaningless, the coefficients referring to it would be semi-meaningless, too. Keep track of your reference category!
+
+## Dummy variables with unordered categories
+
+The categories represented by dummy variables in a regression do not need to be ordered. In fact, it is common for them not to be. Here, we use the `religion` variable, which categorizes each respondent's religion into one of nine broad categories, to estimate how feelings about the presidential candidates vary as a function of the respondent's religion.
+
+``` {r}
+df$religion <- as.factor(df$religion) # The religion variable was imported as character. We need to convert it to be a factor.
+model5 <- lm(biden_dif ~ religion, data = df) 
+model5
+```
+
+The regression results describe how each of several religion categories relate to the reference category. Of course, making any sense of these results requires knowing what the reference category is---an exercise we will leave to the reader. 
+
+## Dummy variables and regression flexibility
+
+At the start of this module, we said that dummy variables can make your regression models more flexible. Have we delivered on this promise? Not quite. We have explained how dummy variables work, but we have not yet explained how this relates to the idea of flexibility.
+
+One way to see what we're getting at is to compare the information that a regression model using dummies to examine the relationship between age and candidate feelings to the results that would be generated by our earlier approach---one where age is entered into the regression in its original form (one variable where the respondent's age in years is recorded).
+
+``` {r, echo = T}
+model6 <- lm(biden_dif ~ age, data=df)
+model6
+```
+
+One year of increased age is associated with a {r abs(round(model6$coefficients[2],2))}-point shift in Trump's favor. Let us compare the predictions this model would generate to those from out five-category dummy model (``model3``). In Figure \@ref(fig:dummy2plots), Panel (a) represents ``model6``, and Panel (b) represents ``model3``.
+
+``` {r dummy2plotsprep, warning=F, echo=F, message=F}
+p4a <- ggplot(df, aes(x = age, y = biden_dif)) +
+  stat_smooth(method = "lm", se = FALSE, color="black", linewidth=.5) + 
+  coord_cartesian(ylim = c(0, 15)) # 
+p4b <- ggplot(meanstab, aes(x=agefactor, y=mean, group = 1)) + 
+  geom_line() + 
+  geom_point() +  
+  coord_cartesian(ylim = c(0, 15)) # 
+
+p4c <- ggarrange(p4a, p4b, nrow=1, labels="auto")
+```
+
+``` {r dummy2plots, echo = F, fig.cap = "Panel (a) shows predicted values derived from ``model6``, while Panel (b) shows predicted values derived from ``model3``."}
+p4c
+```
+The plots tell a similar story, but they do not tell the same story. In (a), the effect of age is constant across its full range; the expected effect of aging from 20 to 21 is exactly the same as aging from 78 to 79, for instance. In (b), we can see an overall downward trend, but it does not occur evenly. People aged 40 to 49 are even more favorable to Joe Biden than people in the lowest age bracket. And people aged 50-59 appear to like Donald Trump more than any other age group. These distinctions---which ``model6`` would have missed---could be consequential. For instance, they could orient us to investigate the possibly conservatizing effects of coming of age during the Reagan administration (which people aged 50-59 would have done). This example shows what we mean when we say that dummy variables make OLS more flexible: where the baseline OLS approach covered in Chapter XX constrains OLS estimates to be uniform and linear in nature, dummy variables allow us to estimate a wide variety of nonlinear relationships---often natural for categorical variables.
+
+There is a lot more we could say about dummy variables. You might be wondering: should I _always_ use dummy variables, rather than their continuous companions? Is possible to break a continuous variable into too many distinct categories? How do I know what number of categories is reasonable? Can dummy variables be used for statistical control, as opposed to being the main analytical focus? These are reasonable questions, but some of them additional concepts to answer, and some of the answers are nuanced. So, we will return to them in Chapter XX, after we have a few more tools under our belt.
+
+## Activities
+
+1. Write a one-paragraph interpretation of the results in ``model5`` above. What do each of the estimated coefficients mean? Note that writing such an interpretation will require you to determine what the excluded category is. What rule did R use to determine the excluded category?
+
+2. The ANES dataframe includes a variable ``race6`` with the following coding: 1 = a white, non-Hispanic respondent; 2 = a Black, non-Hispanic respondent; 3 = an Hispanic respondent; 4 = a respondent who identifies as Asian or Native Hawaiian/other Pacific Islander, non-Hispanic; 5 = Native American/Alaska Native or other race; 6 = Multiple races, non-Hispanic. Using this variable (or a recoding of it), estimate a model predicting ``biden_dif`` as a function of racial categories. As part of this exercise, discuss which racial category would be best to use as the reference category. Write a one-paragraph interpretation of your results.
+
+3. Suppose we were simultaneously interested in racial and age divides in perceptions of presidential candidates. Using both the ``age`` variable and the ``race6`` variable, construct a new variable called ``racebyage`` that classifies people as being either "young" (49 and under) or "old" (50 and over) _as well_ as their racial category. (Since there are 6 racial categories and each will be divided into two broad age bands, ``racebyage`` will have 12 levels.) Use ``racebyage`` in a new regression model. Create a table to report the results. Using these results, write one paragraph discussing which racial group exhibits the largest age divide, and offer a conjecture as to why this would be the case.

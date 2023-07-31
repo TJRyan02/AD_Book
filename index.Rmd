@@ -13,6 +13,9 @@ github-repo: TJRyan02/APA_Book
 description: "This is a starting point for a book on Active Political Analysis."
 cover-image: "construction.png"
 ---
+``` {r}
+# bookdown::publish_book(render = 'local')
+```
 
 # Preamble {-}
 
@@ -22,6 +25,7 @@ This is a _sample_ book written in **Markdown**. You can use anything that Pando
 
 ```{r include=FALSE}
 library(ggplot2)
+library(tidyverse)
 theme_set(theme_bw())
 ```
 
