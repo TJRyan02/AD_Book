@@ -1,0 +1,237 @@
+``` {r, echo = FALSE}
+rm(list = ls())
+```
+
+# Polynomial Functional Forms
+
+**Learning goal**: Understand how to estimate and interpret results from polynomial models, as well as when to use such models.
+
+In the fall of 2021, nearly two years into the struggle against Covid-19, the world was enjoying a respite. In many countries, vaccines had become widely available. People had learned to take various precautions, such as testing, masking, and socializing outside. As a result, infection counts and deaths were the lowest they had been for months.
+
+Then, news emerged from Botswana of a new Covid variant---one that was far more infectious than its predecessors, and that appeared at least partly capable of evading the existing vaccines. The so-called Omicron variant quickly become the predominant variant throughout the world.
+
+Imagine yourself as a public health official in New York City on December 20, 2021. Omicron has arrived in the United States, and is starting to propagate. It is your job to prepare the city for the increased medical needs that are sure to come---test kits, hospital beds, and so forth. How many cases are you likely to see, and how quickly will they come? To get a grasp on this question, you examine case counts in New York City over the past month. First, you read in the dataset.
+
+``` {r warning=FALSE, message = FALSE, include = TRUE}
+library(tidyverse)
+library(ggplot2)
+library(zoo)
+library(gridExtra)
+library(ggpubr)
+library(huxtable)
+library(broom)
+
+options(pillar.sigfig = 8) # Set the number of digits to display in examples.
+options(scipen=999) # Avoid scientific notation.
+
+df <- read_csv("datasets/nyc-covid-small.csv") # Source: https://www.nyc.gov/site/doh/covid/covid-19-data-totals.page
+```
+
+Next, you create a variable `case_avg` to represent a seven-day "rolling average" of the case count in New York City. The seven-day rolling average associated with a particular date represents the average case count over that date and the previous six days. Such rolling averages are commonly used to smooth out idiosyncracies associated with single days that would obscure a broader trend. They are particularly helpful for the data we are using here, which exhibit such idiosyncrasies. Without such smoothing, the case count appears to drop sharply every seven days (on the weekends). But these drops are probably not attributable to actual changes in the number of infections. They are more likely attributable to patterns in when people choose to get tested and when the results of these tests get reported to authorities.
+
+``` {r}
+df$case_avg <- rollmean(df$CASE_COUNT, k=7, align="right", fill = NA) # The k argument indicates how many days to average over. The align argument is used to indicate whether the average should be calculated over past dates or future dates.
+
+df <- df %>% filter(date_of_interest > as.numeric(df$date_of_interest[1]) + 7) # Cut out the first 7 days, which were necessary for calculating the rolling averages, but which are no longer needed. (And which don't have their own averages.)
+```
+
+Next, you plot the case count over the past few weeks.
+
+``` {r covid-nyc-1, message = F, fig.cap = "Covid case counts in New York City (7-day rolling average) for Nov. 20 -- Dec. 20, 2021. The line represents the linear model of best fit."}
+firstday <- as.numeric(df$date_of_interest[1]) # R represents dates as the number of days since Jan. 1, 1970. So the first date in our dataset is represented by the number 18951, since the day in question was 18,951 days since 1/1/70. Momentarily it will be useful to recode this variable such that the first day in the timeframe we are analyzing is represented by the number zero. Creating the scalar firstday helps to accomplish that.
+
+df$daycount <- as.numeric(df$date_of_interest) - firstday # Create a variable that counts the number of days since the start of the time window.
+model1 <- lm(case_avg ~ daycount, data = df)
+
+p <- ggplot(df, aes(x=date_of_interest, y=case_avg)) + geom_point() + stat_smooth(method = "lm", se = FALSE, color="black", linewidth=.5)
+p
+```
+
+Figure \@ref(fig:covid-nyc-1) shows the case counts  It also shows the result of a simple linear regression where the only $x$-variable is a count of how much days into the relevant period a particular observation is. For instance, November 20 has an $x$-value of 1, November 21 has an $x$-value of 2, and so on.
+
+``` {r, echo = FALSE, warning = FALSE}
+dec21_p <- predict(model1, newdata = data.frame(daycount=as.numeric(as.Date("2021-12-21")) - firstday))
+
+#dec21_r <- df$CASE_COUNT[df$date_of_interest=="2021-12-21"]
+dec21_r <- 30412 # manual from dataset
+
+dec22_p <- predict(model1, newdata = data.frame(daycount=as.numeric(as.Date("2021-12-22")) - firstday))
+
+#dec22_r <- df$CASE_COUNT[df$date_of_interest=="2021-12-22"]
+dec22_r <- 31406
+
+dec21_p <- round(dec21_p, 0)
+dec21_r <- round(dec21_r, 0)
+dec22_p <- round(dec22_p, 0)
+dec22_r <- round(dec22_r, 0)
+```
+
+The regression model visible in Figure \@ref(fig:covid-nyc-1) represents the line of best fit through our data points. But it seems like an unsatisfactory model for our purposes (to put it mildly). In particular, it fails to reflect the reality that, starting around December 13, Covid cases start going up at an increasing rate---as might be expected if each infected person is infecting more than one other person (on average). Predictions from this model would likely lead us far astray. To wit, since we have access to data after December 20, we can see that while our model predicts that the number of infections on December 21 will be `r dec21_p`, the true number of infections on December 21 was `r dec21_r`, a miss of `r dec21_r - dec21_p`. The following day is worse: our model predicts that the number of infections on December 22 will be `r dec22_p`, and the true number of infections is `r dec22_r`, a difference of `r dec22_r - dec22_p`.
+
+The problem concerns our model's functional form. A model's **functional form** is the algebraic mapping that links together the $X$ variable(s) and the $Y$ variable. So far, we have only encountered a linear functional form---a mapping where _any_ one-unit increase in a particular $x$ variable is associated with exactly the same change in predicted value for the $Y$ variable: when a particular $x$ goes from 2 to 3, it is associated with exactly the same change in the predicted value of $y$ as when that $x$ goes from 20,304 to 20,305. Visually, such relationships manifest as straight lines.
+
+A linear functional form can get us pretty far. First, lots of relationships out in the world _are_ linear, or close enough. Second, as we saw in the previous module, we can use dummy variables to understand non-constant changes moving across several different categories. (In that module, all the models remained entirely linear. But we splintered one linear relationship into a series of several linear relationships. E.g., rather than one overall coefficient capturing the effect of age, we had several coefficients, each describing the effect of switching from some baseline category to a different category.)
+
+## The Quadratic Functional Form {#quadshape}
+
+Here, we will consider another option---a quadratic functional form. Above, we estimated:
+
+\begin{equation}
+Y_i = \beta_0 + \beta_1\textrm{Days}_i + \epsilon.
+(\#eq:nonlin-1)
+\end{equation}
+
+Consider now the model
+
+\begin{equation}
+Y_i = \beta_0 + \beta_1\textrm{Days}_i + \beta_2\textrm{Days}^2_i+ \epsilon,
+(\#eq:nonlin-2)
+\end{equation}
+
+We can ask R to estimate this model two analogous ways. First, we can manually create a squared term and then enter it as a regressor:
+
+``` {r}
+df$daycount_sq <- df$daycount^2
+model2a <- lm(case_avg ~ daycount + daycount_sq, data = df)
+```
+
+Alternatively, we can ask R to create a squared version of the variable within the regression specification itself. To do so, we enclose the squared term within the `I()` function. The `I()` function is to help R understand that a mathemtical transformation should take place before estimating the regression model---rather than the `^2` being part of the estimation procedure.
+
+``` {r}
+df$daycount_sq <- df$daycount^2
+model2b <- lm(case_avg ~ daycount + I(daycount^2), data = df)
+```
+
+You can estimate both approaches and confirm they generate exactly the same results. However, the second approach is preferable: it leads to standard, consistent naming of the new regressor. Additionally, in the absence of extra care, the first approach will generate predicated values incorrectly. We include the first approach to demystify what is happening "under the hood." Going forward, we will rely only on the second approach---as should you.
+
+``` {r days-sq, echo=FALSE}
+hux_results <- huxreg(model2b, error_pos = "below", statistics = c(N = "nobs", R2 = "r.squared"))
+hux_results <- set_caption(hux_results, "Quadratic Model of Covid Cases in New York")
+hux_results
+```
+
+``` {r covid-nyc-2, fig.cap = 'Covid case counts in New York City (7-day rolling average) for Nov. 20 -- Dec. 20, 2021. The line represents the quadratic model of best fit.'}
+model2b_pv <- predict(model2b)
+p2 <- ggplot(df, aes(x=date_of_interest, y=case_avg)) + geom_point() + geom_line(aes(y=model2b_pv))
+p2
+```
+
+``` {r, echo = FALSE, warning = FALSE}
+dec21_p2 <- predict(model2b, newdata = data.frame(daycount=as.numeric(as.Date("2021-12-21")) - firstday))
+```
+
+The model results are reported in Table \@ref(tab:days-sq). And Figure \@ref(fig:covid-nyc-2) shows predicted values derived from this model. Where we once (Figure \@ref(fig:covid-nyc-1)) had a line, we now have a curve. The curve appears to better reflect an important property of our data: that cases started to rise sharply around Dec. 13. This model is not perfect. But it does seem like a better way to characterize our situation: given a new variant, each infected person is likely to infect more than one other, on average, so the infection rate will accelerate over time.
+
+What have we done? We have adjusted our specification such that `daycount` can affect the dependent variable in two ways, rather than one: it can have an effect that is constant over time (embodied by the `daycount` coefficient). And it can have a separate effect that changes over time (embodied by the `I(daycount^2)` term). How _much_ of the effect was constant and how much varied over time was not foreordained; it was determined by the data---by OLS doing what it always does: finding the coefficients that minimize the sum of squared errors.
+
+One way to think about what we are doing when we estimate a quadratic model is that we have relaxed a constraint on our usual estimation process. Where previously we fit a rigidly straight line through a cloud of data points, we are now fitting a curve---with one of the coefficients (the one associated with the squared term) determining just how curvy the curve will be. (And with the special case that $\beta_2 = 0$ representing the scenario where there is no curve whatsoever.) Figure \@ref(fig:quad6) shows 6 curves a quadratic model could fit, depending on what data were being analyzed.
+
+``` {r quad6, echo = FALSE, fig.cap = 'Six quadratic models. (a) $y=2.5 + .5 + .1x^2$ (b) $y = 50 + x - .05x^2$ (c) $y = 20 + 2x - .1x^2$ (d) $y = 20 - 5x + x^2$ (e) $y = 80 + 5 - x^2$ (f) $y = 20x - 2x^2.$'} 
+df3 <- data.frame(x = seq(from = 0, to = 10, by = .1))
+df3$y_a <- 2.5 + .5*df3$x + .1 * (df3$x^2)
+df3$y_b <- 50 + 1*df3$x - .05 * (df3$x^2)
+df3$y_c <- 20 + 2*df3$x - .1 * (df3$x^2)
+df3$y_d <- 20 - 5*df3$x + 1 * (df3$x^2)
+df3$y_e <- 80 + 5*df3$x - 1 * (df3$x^2)
+df3$y_f <- 0 + 20*df3$x - 2 * (df3$x^2)
+
+p3a <- ggplot(df3, aes(x=x,y=y_a)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+p3b <- ggplot(df3, aes(x=x,y=y_b)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+p3c <- ggplot(df3, aes(x=x,y=y_c)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+p3d <- ggplot(df3, aes(x=x,y=y_d)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+p3e <- ggplot(df3, aes(x=x,y=y_e)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+p3f <- ggplot(df3, aes(x=x,y=y_f)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+
+p3 <- ggarrange(p3a, p3b, p3c, p3d, p3e, p3f, labels="auto", common.legend = TRUE)
+p3
+```
+
+As \@ref(fig:quad6) depicts, the results embodied in the model's three coefficients (including the intercept term) can describe many different relationships. The regression line can change direction (from a positive to a negative slope or vice-versa). And it can curve gradually or dramatically. 
+
+It bears emphasis that, although we have _lessened_ the constraint on our model, we have not removed it entirely. A linear functional form requires the slope of the line-of-fit to be exactly the same for all values of $x$. In contrast, a quadratic function form allows the slope to change---but only in certain ways. In particular, it can change direction (from a positive slope to a negative one) only once, which leads to U-shaped (or upside-down U-shaped) lines of fit. Figure \@ref(fig:quad6) does not---and could not---contain an example of a quadratic model the where sign on the relationship between $x$ and $y$ changes more than once. We will return to this realization later, when we discuss more elaborate polynomial models.
+
+## Interpreting Coefficients in a Quadratic model
+
+For linear functional forms, regression coefficients have a convenient interpretation. Each coefficient describes the model's predicted change in $Y$ for a one-unit change in the $x$ to which it is attached. Does this interpretation apply to a quadratic model?
+
+No. We can see as much by considering specific predicted values generated by `model2b`. First we'll consider the change in predicted value from the one-unit change going from day 10 to day 11. (There is nothing special about these values. We could have chosen any consecutive days.)
+
+``` {r echo = TRUE}
+pred_first <- predict(model2b, newdata = data.frame(daycount=c(10,11)))
+pred_first
+```
+The predicted change in $Y$ is `r round(pred_first[2],2)` - `r round(pred_first[1],2)` = `r round(pred_first[2] - pred_first[1], 2)`. Second, let's consider the change from day 20 to day 21.
+
+``` {r echo = TRUE}
+pred_second <- predict(model2b, newdata = data.frame(daycount=c(20,21)))
+pred_second
+```
+The predicted change in $Y$ is `r round(pred_second[2],2)` - `r round(pred_second[1],2)` = `r round(pred_second[2] - pred_second[1], 2)`---a very different result. And of course that was kind of the point: we estimated a quadratic model precisely because we thought $Y$'s rate of change might itself change. But we can see now that the increased flexibility we get with a quadratic model comes with a cost concerning ease of interpretation. Unless $\beta_2=0$, neither coefficient can be interpreted as the marginal change in the predicted value of $Y$ for a one-unit change in $X$. In fact, neither coefficient has a straightforward substantive interpretation at all.
+
+Can we still use our estimates to say intelligent things about what changes in $Y$ will be associated with a change in $X$? Yes---in two ways. One way, which we used just above, is to calculate specific predicted values that are of interest in our context. Using the procedure sketched earlier in this section, we can predict the case count on any particular day, or the predicted change between any two days. In practice, this is how results from quadratic models are typically communicated: by reporting (likely in a figure) informative predicted values.
+
+More generally, we can use our results to derive a _new_ function that will tell use the predicted rate of change in $Y$ for any value of $X$ that one might enter into it. Doing so requires just a touch of calculus. Because we do not assume that readers of this book have working knowledge of calculus, we note that you can skip the remainder of this subsection, and continue on from there. But we think a short digression is worth it, to develop your understanding of how tools you are learning here relate to broader mathmetical principles.
+
+If you have taken a calculus course, one of the first things you learned is that the _derivative_ of a function is an expression that represents the function's rate of change at a particular point. (Which is what we're looking for!) Derivatives are calculated via the rules of differentiation. There are several rules of differentiation, but here we only need one---the simplest one, called the Power Rule. The Power Rule tells us that the derivative of a polynomial function can be calculated by multiplying each coefficient by its exponent, lowering the exponent by 1, and dropping any constants. For instance, consider the function $f(x)=4x^2 + 6x + 5$. The derivative of this function, $\frac{df}{dx}$, is $8x + 6$. We could choose any value of $x$, substitute it into the expression $8x + 6$, and thereby determine the parent function's rate of change at that value of $x$. For instance, if $x=3$, the function's rate of change is 30.
+
+We can apply these principles to the results in Table  \@ref(tab:days-sq) to determine the rate at which cases are changing, for any day we might choose:
+
+  \begin{align}
+Y &= 2501.44 - 457.416*days + 25.423*days^2 + \epsilon \\
+\frac{\partial Y}{\partial X} &= -457.416 + 50.846*days
+(\#eq:covid-deriv)
+  \end{align}
+
+Two constant terms (2501.44 and $\epsilon$) drop out. The coefficient associated with $days$ now becomes a constant, and the quadratic term ($days^2$) becomes linear. We can now substitute any value for $days$ we might desire into Equation \@ref(eq:covid-deriv) to determine the rate of case increases on that day. We could also plot the rates over time. 
+
+You likely noticed that in Equation \@ref(eq:covid-deriv), we used the partial derivative operator $\partial$ rather than the total derivative operator $d$. Where a total derivative characterizes the rate of change in $Y$, accounting for _all_ the $X$ variables in a particular expression, a _partial_ derivative characterizes how $Y$'s rate of change depends on just one $X$---here, $days$. Any remaining $X$s are treated as constants, and therefore commonly drop of out consideration when calculating the partial derivative. Here, there were no other $X$ variables, so $\partial$ vs. $d$ was a distinction without a difference. But we wished to help you understand the notation and explain why you might see the $\partial$ operator in the future.
+
+>**Upshot**: Coefficients in a quadratic model have no straightforward interpreation. Data analysts should generally communicate model results by reporting informative predicated values derived from a model.
+
+## When to use a Quadratic Model {#priori}
+
+When should you use a quadratic model? Since many aspects of data analysis are grounded in rigid rules, you might expect us to articulate precise, objective circumstances under which they should and should not be employed. In fact, choosing a quadratic model, as with many other choices about functional form, is a judgment call---one that, in many circumstances, reasonable people could make differently.
+
+A strong justification for a quadratic model is that one expects changes in the $Y$ of interest to follow a shape of the sort depicted in Figure \@ref(fig:quad6). This expectation is most compelling when it draws on reasons _external_ to our data---what one might call _a priori_ reasons---rather than patterns we have noticed in the data. For instance, in our Covid example, it would be better to justify a quadratic model by referencing known properties of virus transmission---one person can infect multiple others, which will lead to exponential growth---than to look at the data, observe a curvilinear trend of some sort, and justify the quadratic model on that basis. There are many ways to think about what makes the _a priori_ justification stronger, and fully covering them would require too long a digression. But one way to think about it is to say that when you justify a model based on patterns you notice in the data, you risk basing your choices on random idiosyncrasies in the data. When the justification rests on known (or theorized) properties of the _data generating process_, in contrast, this risk disappears, and researchers are more likely to treat structurally similar analysis tasks similarly.
+
+To further flesh out how quadratic models are used, let us turn to two real examples from Political Science research articles:
+
+* Wullert & Williamson [-@wullert2016] examine whether countries with more democratic institutions (e.g. regular elections) have lower infant mortality than countries that are more autocratic. One might naturally expect democracy always to be associated with lower levels of infant mortality, since citizens probably want to elect leaders who work to provide good health care. But Wullert & Williamson suggest that, for an autocratic regime, and _initial_ move toward democracy might spur leaders to engage in violent repression, which could increase infant mortality. As such, these authors posit an "inverted U-shaped relationship between regime type and violence" (1059).
+
+* Seiferling [-@seiferling2020] examines whether governmental leaders tend to spend a lot of public money and run up big deficits when they are worried they are about to be voted out of office. His $Y$ variable is figures on 79 countries' deficits and surpluses from 1980--2012. His focal $X$ variable is a measure of how likely the in-power leaders are to experience an electoral loss that will throw them out of office, within one year. He allows this variable's effect to have a quadratic form, since incumbents might be especially motivated to spend public money (and thereby garner public support) in tightly-contested electoral situations (a loss probability around 50%).
+
+In neither of these cases was the choice of a quadratic model foreordained. One can imagine segmenting the $X$ variable into a reasonable number of ordered categories, and representing each with a dummy variable (as described in Chapter XX). Or, perhaps more pragmatically, one can imagine applying and reporting a few complementary approaches, such that a reader can readily see how substantive conclusions do or not depend on the choices applied.
+
+>**Upshot**: Quadratic model are best justified by pointing to external reasons that the relationship between $X$ and $Y$ would be expected to follow the shape of a quadratic curve.
+
+## Higher-order Polynomial Models
+
+In Section \@ref(quadshape), we stressed that a quadratic functional form loosens a model's constraint---but only to a certain degree. In a quadratic model, the line of fit can change direction (from positive to negative or vice-versa), but it can only do so once. Can we relax the model's constraint even more? If so, when would it make sense to do so? We will take each of these questions in turn.
+
+We can indeed relax the model's constraint still more. One way to do so would be to add, in addition to the quadratic term ($X^2$), a cubic term ($X^3$). Just as adding a quadratic term allowed the line of fit to change directions one, the addition of the cubic term will allow it to change directions twice, as depicted in Figure \@ref(fig:cubic).
+
+``` {r cubic, echo = F, warning = F, fig.cap = "A Cubic functional form: $Y = 1 + 40X - 10X^2 +0.7X^3.$"}
+df4 <- data.frame(x = seq(from = 0, to = 10, by = .1))
+df4$y <- 1 + 40*df4$x - 10 * (df4$x^2) +  .7 * (df4$x^3)
+
+p4 <- ggplot(df4, aes(x=x,y=y)) + geom_line() + scale_y_continuous(limits = c(0,100), breaks = c(0,20,40,60,80,100))
+p4
+```
+
+In practice, cubic models are seldom the most appealing modeling approach. As with quadratic models, the coefficients generated in a cubic model have no straightforward interpretation, leaving it to the researcher to characterize results via predicted values. Additionally, the kind of _a priori_ justification that we discuss in Section \@ref(priori) is harder to provide for a cubic model, since the author needs to articulate why the sign associated relationship would change not only once, but twice. One of the authors of this text book one had occasion to employ a cubic model [@agadjanian2023]. But, the choice was inspired by great uncertainty surrounding what functional form would be appropriate, and it was used alongside a categorical approach similar to Chapter XX.
+
+In principle, we could continue on. Why not estimate models including a fourth-order term ($X^4$), a fifth-order term ($X^5$), or more? Although such models are estimable, in practice they are never used in the social sciences. It is worth a moment to think about why. First, each added polynomial term further relaxes the constraint of the model, making the line of fit more sensitive to idiosyncrasies. For instance, in a dataset with a small number of observations, one of the coefficients might change dramatically in response to a single extreme data point, since such a change would dramatically decrease the model's $R^2$ statistic---still the one and only criterion (that we have encountered) for determining the model of best fit. Second, researchers usually approach a dataset with some specific idea that they wish to test---for the Wullert & Williamson [-@wullert2016] example above, that strengthening democratic institutions will cause infant mortality rates first to go up, and then to go down. As the functional form becomes less and less constrained, it becomes clear that there _is_ no specific idea being tested---such an idea would be intractably elaborate. And third, if the researcher were not testing an idea, but rather simply trying to distinguish trends and patterns in their data, there are separate tools designed such a purpose. (One such tool, beyond the scope of this book, is called LOESS regression.)
+
+>**Upshot**: Circumstances calling for a cubic functional form are rare, and higher-order polynomial models should generally be avoided.
+
+## Activities
+
+1. Consider the relationship between age (conceptualized as an independent variable) and income (conceptualized as a dependent variable). What functional form would represent a reasonable way to describe the relationship between these two variables? You should argue in favor of 1) a linear functional form, 2) a quadratic functional form, or 3) some more specific functional form (as we encountered in Chapter XX). Bear in mind that this is a "data-free" question. Your answer should draw from your general knowledge about the world, not patterns you have noticed in any particular dataset.
+
+2. Now, turn to the ANES dataset that we used in the previous chapter. That dataset includes a variable called `income`, which describes each respondent's family income, broken down into 22 approximately equally sized, ordered categories, each representing roughly 5% of US households. Estimate the relationship between age and income---first via a linear model, and then via a quadratic model. Plot the predicted values generated by each model. Then, for each model, describe the estimated effect of income increasing from:
++ 22 to 23
++ 70 to 71
+
+<!-- Might need to provide meaning of the income categories in a data appendix. -->
+
+3. Suppose you wanted to use the ANES dataset to test the hypothesis that income changes drastically between the ages 65 and 67---when US citizens become eligible for Medicare as well as full Social Security benefits. What problems would arise in using the linear or quadratic models estimated for the previous questions to test this hypothesis? What alternative approaches could you use?
