@@ -1,0 +1,148 @@
+``` {r, echo = FALSE}
+rm(list = ls())
+```
+
+# Logarithmic Models {#logintro}
+
+**Learning goal**: Understand when it makes sense to apply a logarithmic transformation to a variable being entered into a regression, and how to intrepret results from a logarithmic model.
+
+A timeless question in the study of political development concerns the relationship between _democracy_ and _prosperity_. One might readily suppose that democracy and prosperity would go hand-in-hand. When regular people have the ability to influence governmental decisions, they might feel more comfortable investing their time and money in businesses, which could help a country to flourish. Conversely, a stagnant economy might lead citizens to relinquish some of their say in government and acquiesce to a strong (or even  authoritarian) leader who promises to get things on track.
+
+Does such a relationship exist in the real world? One way we could begin to explore this question is to turn to the Quality of Government (QoG) dataset, a publicly available dataset compiled and regularly updated by researchers at the University of Gothenburg. Of particular use to us, the QoG dataset includes information on most countries' per capita gross domestic product (GDP), which is the most commonly-used measure of country-level economic health. It also includes a "Polity" score for most countries. Polity scores are an effort to systematically characterize where each country in the world lies on a spectrum ranging from highly authoritarian to high democratic. To generate each country's score, political scientists code numerous characteristics of each country's government---whether the chief executive has limitations on their power; whether leaders are selected through hereditary selection versus competitive elections; whether voices opposed to the current leadership are repressed, for some examples---ultimately assigning each country a score that ranges from -10 (autocracies) to 10 (full democracies). Using the QoG dataset, we can estimate a familiar-style linear regression to characterize the linear relationship between per-capita GDP ($X$) and Polity ($Y$).
+
+``` {r warning=FALSE, message = FALSE, include = TRUE}
+library(tidyverse)
+library(ggplot2)
+library(huxtable)
+library(knitr)
+library(kableExtra)
+library(formattable)
+library(dplyr)
+library(ggpubr)
+
+df <- read_csv("datasets/qog_basic.csv")
+
+df$mad_gdppc <- df$mad_gdppc / 1000 # Easier to think of GDP in thousands.
+
+model1 <- lm(p_polity2 ~ mad_gdppc, data = df)
+```
+
+And, of course, it's always helpful to examine the results visually, in a figure.
+
+``` {r, warning = F}
+p <- ggplot(df, aes(x=mad_gdppc, y=p_polity2)) + geom_point() + stat_smooth(method = "lm", se = FALSE, color="black")
+```
+
+``` {r gdp1, echo = FALSE}
+hux1 <- huxreg(model1, error_pos = "below", statistics = c(N = "nobs", R2 = "r.squared"))
+hux1 <- set_caption(hux1, "Linear relationship between per-capita GDP and Polity Scores")
+hux1
+```
+
+``` {r gpdfig1, echo = FALSE, message = F, warning = F, fig.cap = "A linear model of the model between GDP ($X$) and Polity scores ($Y$)"}
+p
+```
+
+Table \@ref(tab:gdp1) and Figure \@ref(fig:gpdfig1) show the results of this exercise. From the regression results in Table \@ref(tab:gdp1), we can see that a one-unit increase in GDP (which, given our scaling, means a $1,000 increase in GDP) is associated with a Polity increase of 0.014 points. From Figure \@ref(fig:gpdfig1), we can eyeball that the model predicts an increase in Polity score of about 3.8 for the lowest-GDP countries to the country with the highest GDP (oil-rich Qatar).
+
+Does it make much sense to think of the relationship between GDP and Polity this way? Taking a step back, there are reasons---perhaps several---to be uncomfortable with it. The one we wish to dwell on concerns how the marginal effect of a \$1,000 increase in per-capita GDP would look _in context_. For a citizen in above-mentioned Qatar, with its per capita GDP of \$153,000, such an increase might hardly be felt: the person's income would increase by less than 1%. But for people who live in several of the poorest countries in our dataset---there are `r nrow(df[df$mad_gdppc<2,])` countries with a per-capita GDP below $2,000---it could be life-changing, increasing income by more than 50% or, for the five very poorest countries with per-capita GDP below \$1,000, more than 100%. Surely we'd expect the marginal effect of \$1,000 to be greater in the poor countries than in the rich ones. And yet our model is doing nothing to account for this likelihood.
+
+## Refresher on logarithms
+
+But it can. To see one common approach that researchers apply in such a circumstances, it's worth a moment to refresh your memory about logarithms. A logarithm is a function that links together three numbers, which we'll label as $x$, $y$, and a base, which we'll call $b$. Given $x$ and $b$, the logarithmic function tells us what exponent needs to be attached to $b$, to produce $x$. For instance, if $b=3$ and $x=729$, the logarithmic function asks what number 3 needs to be raised to, to produce 729. Since the answer is 4, $\log_3 729 = 4$. By the same logic, $\log_2 32 = 5$ and $\log_5 64 \approx 2.58.$ Many people (some authors included) find logarithms a little disorienting. We are more accustomed to thinking about exponents, and logarithms invert the familiar focus on what happens when you raise a number to some power. In fact, that's exactly what they do: just as subtraction is the inverse function for addition and division is the inverse function for multiplication, logarithms are the inverse function for multiplication.
+
+Although, in principle, many numbers can serve as the base for a logarithm, the applications we'll encounter always use the "natural logarithm," which is the logarithm with base $e$. Here, $e$ refers to Euler's number, a constant approximately equal to 2.71828. Why do social scientists usually focus only on the natural logarithm? In a nutshell, the natural logarithm has convenient mathematical properties, some of which we will explore in just a moment, that would be lost if we used a different base. The focus on the natural logarithm is so common that, unless you intentionally override it, R's `log()` function uses it as a default. In this book, when we write $\log$ without specifying a base in the subscript, we always mean that we are referring to the natural logarithm and $e$ is the base. We won't use the notation $\ln$---sometimes invoked to refer to the natural logarithm.
+
+Before we continue, let us take a moment to discuss terminology that can easily lead to confusion. This chapter is about logarithmic models---regression models where the functional form includes one or more variables that have undergone a logarithmic transformation. Another analytical tool you might come across is called _logistic regression_ or, synonymous, a logit model. Logit models refer to something entirely distinct from a logarithmic model. Logistic regression is an alternative to Ordinary Least Squares estimation that is sometimes appropriate when the dependent variable only takes on two values. The procedure for estimating a logit model involves logarithms, which is where they get their name. This book does not cover logit models in detail but we wanted you to be aware of the distinction, since the terms are so easily confused.
+
+With this refresher in hand, let's explore how logarithms can be put to use in regression analysis. We'll do so by scrutinizing two key properties.
+
+## Property 1: Log transformations can tame unwieldy properties of a distribution.
+
+``` {r log2, echo = FALSE, message = F, warning = F, fig.cap = 'Distribution of country per-capita GDPs under regular coding (a) and under a log transformation (b).'}
+df2 <- df # Making separate for clarity of exposition
+p2a <- ggplot(df2, aes(x=mad_gdppc)) + geom_histogram() + expand_limits(y=c(0,35)) + ylab("Count") + xlab("GDP")
+df2$log_gdp <- log(df$mad_gdppc)
+p2b <- ggplot(df2, aes(x=log_gdp)) + geom_histogram() + expand_limits(y=c(0,35)) + expand_limits(y=c(0,35)) + ylab("Count") + xlab("Logged GDP")
+
+p2 <- ggarrange(p2a, p2b, labels = "auto", common.legend = TRUE) 
+p2
+rm(df2)
+```
+Figure \@ref(fig:log2) shows the distribution of GDP, both in its original form (Panel a) and after a log transformation (Panel b). The first distribution is "skewed," which is a technical term for asymmetrical.^[Specifically, this distribution is right-skewed. The terms "left-skewed" and "right-skewed" are often misused, since some people incorrectly think of "skew" as a rough synonym for "lean." You might look at Panel (a) in Figure \@ref(fig:log2) and think that it is left-skewed, since it looks like it leans to the left. In fact, "skew" properly refers to the part of a distribution that seems like it is _missing_ observations, not where they are concentrated. For a technical definition, a left-skewed distribution is one where the mean is less than the median, and a right-skewed distribution is one where the mean is greater than the median.] As we will discuss in more detail later in this book, skewed distributions can lead to misleading regression results. In brief, they can do so because observations that are far away from the distribution's center of gravity (such as Qatar, way to the right of Panel a) exert disproportionate influence on the fit of the regression line. Thus, we would be uneasy about entering a distribution like the one in Panel (a) of a regression without further consideration.
+
+As Panel (b) shows, applying a log transformation to the distribution largely removes the skew. This occurs because a log transformation works like a staircase in which you have to climb more steps to get from each successive floor to the next: it takes a GDP increase of only \$4,690 to go from 1 to 2 on a log scale, but it takes an increase of \$12,800 to go from 2 to 3, \$34,800 to go from 3 to 4, and so on. As a result of this property, differences among the poorer countries in our dataset are expanded somewhat, and differences among the wealthy countries are compressed. The influence of an outlier like Qatar will be greatly reduced.
+
+Are we allowed to, you know, just do that? Is this not some form of impermissible data modification? While a log transformation is not appropriate in all circumstances, it can be a perfectly reasonable step to take---for three reasons. First, just as with rescaling variable (Chapter XX), the key consideration is not whether a researcher is modifying the data---it is whether they are doing so in a transparent and justifiable way. Second, while the log transformation does indeed modify the data in one sense, it does so in a clear and limited way. In particular, although the spacing among observations changes, their _ordering_ stays the same: under a log transformation, the Central African Republic remains the poorest country in our dataset, and Qatar remains the richest. Finally, a log transformation has the potential to _strengthen_ the relationship between a theoretical idea and the measure underlying it, as we explore in the next section.
+
+>**Upshot**: Applying a log transformation to a variable will typically decrease the influence of extreme observations and result in a less-skewed distribution.
+
+## Property 2: Log transformations approximate percentage change
+
+``` {r cchange, echo = F}
+country_change <- df %>% filter(cname %in% c("Burundi", "China", "Ireland")) %>% select(-c(p_polity2, wdi_litrad))
+
+country_change$gdp_5 <- country_change$mad_gdppc*1.05
+country_change$gdp_dif<- country_change$gdp_5 - country_change$mad_gdppc
+country_change$log_gdp <- log(country_change$mad_gdppc)
+country_change$log_gdp_5 <- log(country_change$gdp_5)
+country_change$log_dif <- country_change$log_gdp_5 - country_change$log_gdp
+knitr::kable(
+  country_change, col.names = c("","GDP","Increased GDP","Difference","Log(GDP)","Log(Increased GDP)","Difference in Logs"), digits = 3,
+  caption = "A hypothetical 5% increase in per-capita GDP, considered in both regular and logged terms.") %>%
+  add_header_above(c(" ", "Regular terms" = 3, "Logged terms" = 3))
+```
+
+Table \@ref(tab:cchange) considers three countries in our dataset: Burundi, China, and Ireland. These countries were selected to reflect a low per-capita GDP (Burundi), the approximate median per-capita GDP (China), and a relatively high per-capita GDP (Ireland). The numbers in the `GDP` column show us that Burundi has a per-capita GDP of \$651, China has a per-capita GPD of  \$13,102, and Ireland has a per-capita GDP of \$64,684. The second column shows what each country's GDP would be, if it increased by 5%.^[We find students sometimes appreciate a refresher on the distinction between _percentage_ changes and _percentage point_ changes. If a political candidate received 45% of the vote in an initial election and 51% in a second election, their vote share would have increased by six _percentage points,_ since 51 - 45 = 6. If their vote had increased by six _percent_, their share would be 47.7, since 45 * 1.06 = 47.7.] The `Difference` column compares the previous two, showing for instance that a 5% increase would represent per capita growth of \$33 for Burundi, but \$3,234 for Ireland.
+
+The right section of Table \@ref(tab:cchange) converts all of these results to logged terms. The final column reports the difference in the logs (note: not the log of the differences), which is 0.49 for all three countries. _This is an amazing result!_ It implies that, although a 5% increase resulted in very different growth for the three countries when considered in absolute terms, they experienced essentially the same growth when considered in logged terms. Not only is the result nearly the same for all three countries, the difference in logs is nearly equal to 0.05---analogous to the 5% GDP increase we are contemplating. 
+
+This example illustrates a useful property of logarithms: when we apply the natural logarithm function to a variable, the result is a variable where changes closely correspond to percentage changes. In the new log-transformed variable, Burundi, China, and Ireland all get the same "credit" for a 5% increase in GDP, even though each country experienced very different growth when considered in relative turns. Note that our verbiage here---"closely correspond"---was carefully chosen: log transformations are good---but not a perfect---approximation for percentage changes.^[Robert Nau has written a good explainer on logarithmic transformations, including a derivation of this result: https://people.duke.edu/~rnau/411log.htm] One of the exercises at the end of this chapter asks you to explore when and in which ways the approximation begins to break down.
+
+>**Upshot**: Taking the natural logarithm of a variable---often called log-transforming it---is generally a good way to examine effects of percentage---rather than absolute---changes.
+
+## A different look at GDP and Polity
+
+Having learned what a log transformation can do, let us revisit the regression we estimated in Section \@ref(logintro).
+
+``` {r}
+df$loggdp <- log(df$mad_gdppc) # Log transformation
+model2 <- lm(p_polity2 ~ loggdp, data = df)
+```
+
+``` {r gdp2, echo = FALSE}
+hux2 <- huxreg("Original" = model1, "Logged" = model2, error_pos = "below", statistics = c(N = "nobs", R2 = "r.squared"))
+hux2 <- set_caption(hux2, "Linear relationship between per-capita GDP and Polity Scores")
+hux2
+```
+
+As Table \@ref(tab:gdp2) reveals, the coefficient we are interested has changed from `r round(model1$coefficients[2], 3)` (and not statistically significant) to `r round(model2$coefficients[2], 3)` (and significant). Previously, the coefficient told us that a one-unit increase in per-capita GDP (i.e., given scaling of this variable, a \$1,000 increase in GDP) was associated with a 0.014 increase in Polity. How do we interpret the coefficient in our new model? Clearly, it cannot mean anything concrete about the effect of a \$1,000 increase: as we have seen in the previous sections, in a logged scale, a \$1,000 increase will be represented differently, depending on where the increase occurs (e.g. from \$2,000 to \$3,000, versus \$20,000 to \$21,000).
+
+Much like coefficients from a polynomial model, which we discussed in Chapter XX, coefficients from a logarithmic model have no straightforward interpretation^[The closest we can come is that multiplying per-capita GDP by the constant $e \approx 2.71$ is expected to incrase Polity scores by `r round(model2$coefficients[2], 3)`.] and are seldom interpreted directly. As with polynomial models, we recommend making predicted value plots, or calculating predicted values for substantively interesting values of the independent variables in your model.
+
+>**Upshot**: Because logged scales imply non-constant changes in a variable, coefficients from a logarithmic model do not have a straightforward interpretation. Researchers typically contemplate and communicate results from a logarithmic model using predicted values.
+
+``` {r loggdpplot, echo = F, warning = F, message = F, fig.cap = "Polity scores ($Y$) by logged GDP ($X$). Line is the regression line of best fit."}
+plot <- ggplot(df, aes(x=loggdp, y=p_polity2)) + geom_point() + stat_smooth(method = "lm", se = F, color="black") + xlab("Logged GDP") + ylab("Polity")
+plot
+```
+
+Figure \@ref(fig:loggdpplot) is a predicted value plot for our logarithmic model. As you can see, the points have become horizontally more spread out, reflecting the logarithmic transformation.
+
+## Activities
+
+1. Both polynomial models and logarithmic models are ways for OLS regression to adapt to a circumstances where changes in $Y$ are nonlinear in $X$. Compare and contrast the logarithmic transformation with polynomial transformations, articulating as clearly as you can what circumstances would lead you to use one approach versus the other. 
+
+2. For each of the scenarios below, discuss what functional form seems most appropriate: linear, quadratic, or logarithmic.
+
++ You are modeling a country's probability of winning an armed conflict ($Y$) as a function of how many tanks a patron country supplies to it ($X$). (Assume that, if no tanks are supplied, the country has only a 1% chance to win the conflict.)
+
++ You are modeling politicians' reactiveness to a political protest outside the state legislature ($Y$) as a function of how many people attend the protest ($X$). (Assume that, if 1 protester shows up, the politicians will not be reactive at all.)
+
++ XX
+
+3. The QoG dataset includes a variable called `wdi_litrad`, which represents each country's literacy rate---the percentage of people ages 15 and over who can "with understanding, read and write a short simple statement on their everyday life." Estimate a new regression model that includes logged GDP and (not logged) literacy rates. Write a paragraph interpreting the resulting coefficients. Then, created a predicted value plot where logged GDP is on the x-axis and literacy is set to the global median value.
+
+4. In Table \@ref(tab:cchange), we observed that a 5% increase in GDP resulted in a difference of logs of 0.049---a close approximation. Consider various other plausible changes in GDP, ranging from -50% to 50%. Then, characterize for which values the difference in logs is a good approximation for percentage changes, and where it begins to break down.
+
+
