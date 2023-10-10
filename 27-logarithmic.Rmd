@@ -80,7 +80,7 @@ Are we allowed to, you know, just do that? Is this not some form of impermissibl
 ## Property 2: Log transformations approximate percentage change
 
 ``` {r cchange, echo = F}
-country_change <- df %>% filter(cname %in% c("Burundi", "China", "Ireland")) %>% select(-c(p_polity2, wdi_litrad))
+country_change <- df %>% filter(cname %in% c("Burundi", "China", "Ireland")) %>% select(-c(p_polity2, wdi_litrad, wdi_araland))
 
 country_change$gdp_5 <- country_change$mad_gdppc*1.05
 country_change$gdp_dif<- country_change$gdp_5 - country_change$mad_gdppc
@@ -145,4 +145,4 @@ Figure \@ref(fig:loggdpplot) is a predicted value plot for our logarithmic model
 
 4. In Table \@ref(tab:cchange), we observed that a 5% increase in GDP resulted in a difference of logs of 0.049---a close approximation. Consider various other plausible changes in GDP, ranging from -50% to 50%. Then, characterize for which values the difference in logs is a good approximation for percentage changes, and where it begins to break down.
 
-
+5. The examples in this chapter apply a logarithmic transformation to an _independent_ variable. Could it also make sense to apply a logarithmic transformation to the _dependent_ variable? For instance, the QOG dataset includes a variable (`wdi_araland`) representing the percentage of each country that is arable land. If we were predicting each country's GDP as a function of its percentage arable land, could it still make sense to log transform the GDP variable? If so, estimate the relevant regression and write a one-paragraph interpretation of the results.
