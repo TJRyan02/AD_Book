@@ -224,7 +224,7 @@ In principle, we could continue on. Why not estimate models including a fourth-o
 
 >**Upshot**: Circumstances calling for a cubic functional form are rare, and higher-order polynomial models should generally be avoided.
 
-## Activities
+## Activities {#polyactivity}
 
 1. Consider the relationship between age (conceptualized as an independent variable) and income (conceptualized as a dependent variable). What functional form would represent a reasonable way to describe the relationship between these two variables? You should argue in favor of 1) a linear functional form, 2) a quadratic functional form, or 3) some more specific functional form (as we encountered in Chapter XX). Bear in mind that this is a "data-free" question. Your answer should draw from your general knowledge about the world, not patterns you have noticed in any particular dataset.
 

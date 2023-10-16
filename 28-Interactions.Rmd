@@ -1,0 +1,184 @@
+```{r, echo = FALSE}
+rm(list = ls())
+```
+
+# Interaction terms {#interactintro}
+
+**Learning goal**: Understand how interaction terms allow regressions to capture heterogeneous relationships. Be able to specify and interpret the results of interactive regression models.
+
+One of the clearest results to emerge from the study of Americans' voting behavior is that the economy matters---a lot. For better or worse, the party in power (i.e., the party that currently holds the presidency) tends to be rewarded electorally when the economy is perceived to be doing well. And they tend to founder when the economy is perceived to be doing poorly. See Healy & Lenz [-@healy2013] for one entry point into a large literature.
+
+Suppose you are interested in understanding what conditions intensify and attenuate the effect of economic perceptions. In particular, you want to know whether the effect of economic perceptions increases for people who have recently lost their job, or who have a family member or close personal friend who have done so. This conjecture seems to make sense. If you have first-hand experience with job loss, you might feel economically vulnerable. The country's economic health might bear more heavily on your own well-being and you might therefore pay more attention to it. In deciding who to vote for, you might also place more weight on your perception of the economy compared to other considerations, such as the candidates' stances on foreign policy or social issues like transgender rights.
+
+The 2020 ANES dataset, which we encountered in Chapter \@ref(dummy1), provides some data that we can use to test this conjecture:
+
+-   A variable (`econperc`) summarizing each respondent's opinion about whether the nation's economy has gotten better or worse over the past year. There are five response options ranging from "gotten much worse" to "gotten much better." Following our affinity for unit-scaled survey items, we have coded this variable such that it ranges from 0 to 1, with 1 signifying that the respondent thinks the economy has gotten much better.
+
+-   A variable (`lostjob`) reflecting how the respondent answered the question, "During the past 12 months, has anyone in your family or a close personal friend lost a job, or has no one in your family and no close personal friend lost a job in the past 12 months?" A value of 0 means the respondent does not know someone who lost their job. A value of 1 means they do.
+
+-   Feeling thermometers capturing each respondent's feelings toward Joe Biden and Donald Trump, which we discussed in Section \@ref(gen2020). Similar to Section \@ref(gen2020), we will use these two variables to create a difference score (`trump_dif`) reflecting the respondent's *relative* liking of the two candidates. This variable will serve as our dependent measure. It ranges from -100 (the respondent likes Joe Biden much more than Donald Trump) to 100 (the respondent likes Donald Trump much more than Joe Biden). Note that this coding is equivalent to multiplying the `biden_dif` variable from Section \@ref(gen2020) by -1. We chose to invert this variable (relative to `biden_df`) because doing so facilitates interpretation. The hypothesis we discussed above implies that greater economic perceptions should be associated with support of the incumbent president---Donald Trump, at the time that the data we are examining were collected. Under the current coding, this hypothesis implies a *positive* coefficient associated with `econperc`---and positive coefficients are easier to think about than negative ones.
+
+```{r warning=FALSE, message = FALSE, include = TRUE}
+library(tidyverse)
+library(huxtable)
+
+df <- read_csv("datasets/2020anes.csv")
+df$trump_dif <- df$trump_therm - df$biden_therm
+```
+
+What regression do we want to estimate, to test the hypothesis that economic perceptions influence candidate opinions more for people who lost their job than people who did not? Your first instinct might be to say: simply enter the two relevant variables into a standard regression model, as in:
+
+```{r}
+model1 <- lm(trump_dif ~ econperc + lostjob, data = df)
+```
+
+But we are not even going to report the results of this model, because a moment's reflection reveals that it is not right for the present purpose. The coefficient associated with `econperc` in that model would provide an estimate of the effect of economic perceptions. Because we included the `lostjob` dummy, the estimate *controls for* the effect of seeing someone lost their job. That is, it accounts for the reality that people with positive economic perceptions might be less likely to have seen someone lose their job than people with negative economic perceptions---the confounding issue we confronted at length in Chapter XX. But we still only receive *one* estimate for `econperc`. And our hypothesis implies that we will need two: one for people who saw someone lose their job, and one for people who did not.
+
+Since we seek two estimates for `econperc`, maybe a better approach is to estimate two models, one in each of the subsets defined by `lostjob`:
+
+```{r, echo = T}
+model2a <- lm(trump_dif ~ econperc, data = df[df$lostjob==0,]) # People who did not see someone lose their job
+model2b <- lm(trump_dif ~ econperc, data = df[df$lostjob==1,]) # People who saw someone lose their job
+```
+
+```{r intert1, echo = F}
+hux1 <- huxreg("Did not lose job" = model2a, "Lost job" = model2b, error_pos = "below", statistics = c(N = "nobs", R2 = "r.squared"))
+hux1 <- set_caption(hux1, "Effect of economic perceptions of candidate liking, depending on job loss.")
+hux1
+```
+
+Table \@ref(tab:intert1) displays the results of such an approach. The left-hand column shows the estimated effect of economic perceptions among people who do not know someone who lost their job; the right-hand column shows the estimated effect among people who do know someone who lost their job. Each `econperc` coefficient is consistent with the expectation that favorable economic perceptions benefit the incumbent, since higher values on `econperc` are associated with relatively more positive feelings toward Donald Trump. But comparing the two `econperc` coefficients to each other provides evidence against the hypothesis we sought to test. Above, we posited that observing job loss would *increase* the effect of economic perceptions. In fact, the estimated effect became smaller, since `r round(model2a$coefficients[2], 3)` \> `r round(model2b$coefficients[2], 3)`.
+
+The subsample approach is getting us farther, but it has some shortcomings. First, it was only possible because the variable we thought might condition the effect of `econper`---`lostjob`---is categorical. In fact, it takes on only two values (0 and 1), which leads to clean subsetting. It's not clear how we could implement the subsetting approach if the conditioning variable were something like income, which in principle could take on hundreds of different values. Second, although we can eyeball the difference between `round(model2a$coefficients[2], 3)` and `r round(model2b$coefficients[2], 3)`, it will prove difficult to conduct formal analyses of this difference---the focus of our inquiry!---when they exist in separate regressions. Third, the subsetting approach would become messier if we desired---as we well might---to include one or more control variables. These controls would have different estimated effects in each subset. As a result, the comparison of the two `econperc` coefficients would cease to be an even "apples to apples" comparison.
+
+The solution to all these issues is a tool called an interaction term, which will allow us to consider results like those reported in Table \@ref(tab:intert1) in *one* regression model, rather than two. Before we get to the specifics, let us remark on this chapter's significance. At first blush, one might see interaction terms as being only marginally useful. Viewed a certain way, they amount to a mere reformulation of something you have already learned how to do: analysis within subgroups. In fact, we consider interaction terms to be one of the most important topics covered in the second half of the book. So many avenues of social scientific inquiry lead researchers to consider conditional (or "heterogenous") effects: they know that some association exists, and the real learning focuses on understanding the circumstances that make it larger or smaller. Interaction terms represent an elegant and extremely flexible way to investigate such matters via regression analysis.
+
+## What is an interaction term?
+
+Let us return to `model1` above, which we momentarily considered, but quickly put aside as being wrong for the circumstances. Written algebraically, this model is:
+
+```{=tex}
+\begin{align}
+Y &= \beta_0 + \beta_1 econperc + \beta_2 lostjob + \epsilon (\#eq:inter)
+\end{align}
+```
+This model is wrong. But what would happen if we multiplied the `econperc` variable by the `lostjob` variable, and included the result in our regression? As in:
+
+```{=tex}
+\begin{align}
+Y &= \beta_0 + \beta_1 econperc + \beta_2 lostjob + \beta_3  econperc \times  lostjob + \epsilon (\#eq:inter2)
+\end{align}
+```
+In R, this would literally be:
+
+```{r}
+df$econ_x_job <- df$econperc * df$lostjob
+model3a <- lm(trump_dif ~ econperc + lostjob + econ_x_job, data = df)
+```
+
+Why would we do this? We would do it because multiplication is a way mathematically to represent the idea of *co-occurrence*. Consider Table \@ref(tab:intercases), which reports the values of `econperc`, `lostjob`, and `econ_x_job` for eight illustrative cases from the dataset. The `econ_x_job` column is identical to the `econperc` column---but *only* for the rows where `lostjob`=1. It reports the value of `econperc` but only for the people who observed job loss. Of course, the straightforwardness of this interpretation gets a big assist from the fact that the value 0 is well-defined for both `econperc` and `lostjob`. As we shall later in this chapter, having a clear sense of what 0 means for each component of an interaction term greatly facilitates interpretation of related results.
+
+```{r intercases, echo = F}
+inter_small <- df %>% filter(case %in% c(200053, 201209, 200305, 200169, 200558, 200718, 200725)) %>% select(case, econperc, lostjob, econ_x_job)
+knitr::kable(
+  inter_small, caption = "Interaction terms capture co-occurrence."
+)
+```
+
+## Interpreting results of an interactive model {#interactioninterp}
+
+Having a stand-alone variable that captures the co-occurrence of two underlying variables is useful because, when this interactive variable is entered into a regression model, we will wind up with three coefficients: one that reflects the effect of `econperc` *irrespective* of the status of `lostjob`; one that reflects the effect of `lostjob` *irrespective* of the status of `econperc`; and a third that reflects a special adjustment that needs to be applied when `econperc` and `lostjob` co-occur. To see this unfold, consider Table \@ref(tab:intert2), which presents the results of `model3a` (in the final column). Table \@ref(tab:intert2) repeats the earlier subgroup analysis, for convenient reference.
+
+```{r intert2, echo = F}
+hux2 <- huxreg("Did not lose job" = model2a, "Lost job" = model2b, "All respondents" = model3a, error_pos = "below", statistics = c(N = "nobs", R2 = "r.squared"))
+hux2 <- set_caption(hux2, "Effect of economic perceptions of candidate liking, depending on job loss.")
+hux2
+```
+
+It is worth a long pause to dwell on Table \@ref(tab:intert2) and reflect deeply on how the third column relates to the first two, as doing so helps to illustrate what we mean when we describe a special adjustment that needs to be applied when two variables co-occur. The trick to doing so is to compute predicted values for four different people who have the maximum and minimum values of `econperc` and `lostjob`.
+
+Start with the easiest case, which is someone who has the lowest possible economic perceptions and who did not observe job loss. From the standpoint of Column 1, the predicted value for such a person would simply by the intercept term, `r round(model2a$coefficients[1], 3)`, meaning the model predicts them to lean `r abs(round(model3a$coefficients[4], 3))` in Biden's favor. Column 2 cannot be applied to such a person, since it is limited to people who observed job loss. From the standpoint of Column 3, such a person would have a value of 0 for all the $X$ variables. Therefore, their predicted value would *also* be represented by the intercept term. It therefore makes sense that the intercept term is identical in both columns 1 and 3.
+
+Next, consider someone who has the highest possible value of `econperc`, and who did not observe job loss. From the standpoint of Column 1, the predicted value for such a person would be `r round(model2a$coefficients[1], 3)` + `r round(model2a$coefficients[2], 3)` = `r round(model2a$coefficients[1] + model2a$coefficients[2], 3)`. Once again, Column 2 would not apply, since it is limited to people who observed job loss. From the standpoint of Column 3, we would not need to account for the `lostjob` coefficient (since there was not job loss), nor would we have to account for the occurrence of `econperc` and `lostjob`, since they did not co-occur. Therefore, the predicted value would be the same: `r round(model3a$coefficients[1],3)` + `r round(model3a$coefficients[2],3)` = `r round(model3a$coefficients[1] + model3a$coefficients[2], 3)`.
+
+Things get slightly more elaborate as we shift focus to someone who has low economic perceptions, and who did experience job loss. Column 1 cannot apply to this person, since it is limited to people who did experience job loss. From the standpoint of Column 2, their predicted value is simply the intercept: `r round(model2b$coefficients[1], 3)`. From the standpoint of Column 3, we need to account for the `lostjob` coefficient, but not the `econperc` coefficient (since `econperc` = 0), not the interaction term, since `econperc` and `lostjob` do not co-occur. The predicted value is `r round(model3a$coefficients[1], 3)` + `r round(model3a$coefficients[3], 3)` = `r round(model3a$coefficients[1] + model3a$coefficients[3],3)`---exactly the same.
+
+We saved the most elaborate, but also the most important calculation, for last: someone with high economic perceptions, who also observed job loss---our first case dealing with the co-occurrence of `econperc` and `lostjob`. Column 1 does not apply here, since it is limited to people who did not experience job loss. From the standpoint of Column 2, the predicted value for such a person is `r round(model2a$coefficients[1], 3)` + `r round(model2b$coefficients[2], 3)` = `r round(model2b$coefficients[1] + model2b$coefficients[2], 3)`. From the standpoint of Column 3, we now need to account for *all* four coefficients: `econperc` since economic perceptions are high, `lostjob`, since the person observed job loss, and also the interaction term, since the two independent variables co-occurred. The predicted value would be `r round(model3a$coefficients[1], 3)` + `r round(model3a$coefficients[2], 3)` + `r round(model3a$coefficients[3], 3)` + `r round(model3a$coefficients[4], 3)` = `r round(model3a$coefficients[1] + model3a$coefficients[2] + model3a$coefficients[3] + model3a$coefficients[4], 3)`---again exactly the same.
+
+Again, this might seem like a lot of work to produce the same results in two different ways. The full benefit of estimating conditional relationships in a *single* regression model will come into focus over time. For now, we can remark that Column 3 already gives us something that we did not have before: the coefficient associated with the interaction, `r round(model3a$coefficients[4], 3)` has its own substantive interpretation: it describes how much the effect of `econperc` *depends* on `lostjob`.[^28-interactions-1] The presence of `lostjob` decreases the effect of `econperc` by `r abs(round(model3a$coefficients[4], 3))` points. The standard error below this coefficient also provides the ability for us to consider whether this dependence is statistically significant, as we will discuss in Chapter XX.
+
+[^28-interactions-1]: The interaction term also tells us the converse: how much the effect of `lostjob` depends on `econperc`. This statement strikes many students as counterintuitive, but you can't have one without the other. The activities for this chapter ask you to demonstrate the truth of this statement via predicted value computations.
+
+> **Upshot**: Interactive regression models include a regressor that is the product of two underlying (or "constituent") variables. The coefficient associated with the interaction term represents dependency in the relationship between these variables and the dependent variable.
+
+We will finish this section with an important note about estimating interactive models in R. Above, we estimated the interactive regression model by manually creating a new variable representing the product of `econperc` and `lostjob`. We did it this way to demystify what is going on "under the hood." In practice, the normal way to estimate interaction models in R is to connect the terms being interacted with a colon, as in:
+
+```{r}
+model3b <- lm(trump_dif ~ econperc + as.factor(lostjob) + econperc:lostjob, data = df)
+```
+
+`model3a` and `model3b` contain the same results, but `model3b` is better because here, R understands that `econperc:lostjob` is an interaction, in a way that did did not for `econ_x_job`. Going forward, you should always estimate interaction models as shows in the snippet right above. In the absence of a cumbersome process, applying R's `predict()` function to the earlier manual approach will result in incorrect predicted values.
+
+## Predicted values in interactive models
+
+In Chapters XX and XX, we saw that the coefficients that result from polynomial and logarithmic models have no straightforward interpretation. The same is not true of coefficients in interactive models: they *can* be interpreted on their own, at least if you are clear-minded about the coding of the underlying variables. But the interpretation can still be daunting, especially for models that contain multiple interactions or (not covered in this book) three-way interactions. As before, predicted values are your friend when it comes to both interpretation and communication. You can calculate and discuss predicted values associated with various informative cases.
+
+The R work to calculate predicted values, however, requires an extra step compared to the approaches we have seen before. Because the effect of each interacted variable depends on the other, we cannot think of them in isolation, as we have been doing. We need to specify for R what *combinations* of values for the independent variables we wish to examine. Consider the following code:
+
+```{r}
+newdata <- expand.grid(econperc = c(0,.2,.4,.6,.8,1), lostjob = c(0,1))
+```
+
+```{r intert4, echo = F}
+hux3 <- newdata
+knitr::kable(
+  hux3, caption = "Contents of `newdata`.")
+```
+
+As you can see, the `expand.grid` command took two arguments. The first was a vector of possible values that `econperc` could take on.[^28-interactions-2] The second was a vector of possible values that `lostjob` could take. The result, visible in Table \@ref(tab:intert4), is every possible combination of values from these two vectors. `newdata` can now be the input data for calculating predicted values:
+
+[^28-interactions-2]: We could have specified this as `seq(from=0, to=1, by=.2)`. That approach can be helpful when the number of possible values is large.
+
+```{r}
+predictions <- predict(model3b, newdata = newdata)
+```
+
+We can now bind the predicted values to `newdata`:
+
+```{r}
+newdata <- cbind(newdata, predictions)
+head(newdata)
+```
+
+And, most useful, we can use the new data frame to create plots:
+
+```{r interf1, fig.cap = "Results from Model3b"}
+p1 <- ggplot(newdata, aes(y=predictions, x=econperc, color = as.factor(lostjob))) + geom_line() + theme_bw()
+p1
+```
+
+Notice the `as.factor()` call in the command creating the plot. This was necessary to help R understand that `lostjob` is a categorical variable and that we desire *two* lines of fit: one for each value of `lostjob`.
+
+The difference is subtle, but the two lines in Figure \@ref(fig:interf1) are *not* quite parallel: they diverge slightly as they run from left to right. This divergence is a visual manifestation of the essential property of interaction models: the effect of one variable depends on another.
+
+> **Upshot**: Calculating predicted values for interaction models requires attention to all the variables that interact. In R, this is often accomplished with `expand.grid()`.
+
+We'll close by flagging an important "best practice" related to interaction terms. When a regression model includes an interaction term, it should always include all of the interaction's "constituent" terms as stand-alone regressors. Thus, in Table \@ref(tab:intert2), including the $econperc \times lostjob$ interaction obliged us also to include both $econperc$ and $lostjob$ as stand-alone variables in the model. If the constituent terms are not included,  interpreting the interaction term becomes extremely difficult. For excellent discussions of this issue, and interaction terms generally, see Brambor et al. [-@brambor2006] as well as [-@franzese2009].
+
+## Activities
+
+1.  In Section \@ref(interactioninterp), we calculated predicted values for hypothetical respondents who had the highest or lowest values for `econperc` and `lostjob`. Now, calculate predicted values for respondents with intermediary values as follows:
+
+++ `econperc` = .4 and `lostjob` = 0. ++ `econperc` = .6 and `lostjob` = 0. ++ `econperc` = .4 and `lostjob` = 1. ++ `econperc` = .6 and `lostjob` = 1.
+
+2.  When discussing an interactive model such as the one in Column 3 of Table \@ref(tab:intert2), people sometimes call the coefficient associated with one of the constituents of the interaction term (such as the `r round(model3a$coefficients[2], 3)`) associated with `econperc` the "effect" of that variable. But that description is inaccurate and misleading. Write a paragraph articulating why.
+
+3. The ANES data frame includes a variable (`pid7`) that represents each respondent's sense of self-identification with each of the two major American political parties. The variable ranges from 0 = Strong Democrat to 3 = Pure independent to 6 = Strong Republican. This variable seems like a plausible confounder for the relationships we examined in Table \@ref(tab:intert2). Re-estimate all three models in Table \@ref(tab:intert2), this time including `pid7` as a control variable. Write a paragraph discussing the results.
+
+Note that you might find that that tidy 1:1 mapping among the three models goes away once you include a control variable. If this occurs, discuss why it would be so.
+
+4. As we saw in Section \@ref(polyactivity), the ANES dataset includes a variable, `income`, that describes each respondent's family income, broken down into 22 approximately equally sized, ordered categories, each representing roughly 5% of US households. It seems plausible that the effect of economic perceptions would depend on a respondent's income. Write down a hypothesis about how income might condition the effect of economic perceptions---should the effect of economic perceptions increase or decrease, as income goes up, and why? Then, estimate an interactive model that tests your hypothesis. Present the results of your model both in a table and a figure. Write a paragraph discussing whether your hypothesis was supported or not, and include a discussion of informative combinations of predicted values in this paragraph.
+
+For this question, you should conceptualize `income` as continuous, not categorical. You might desire to rescale it in a way that will facilitate interpretation. In the provided dataset, 1 represents an income under \$9,999, and 22 represents an income of \$250,000 or more.
+
+This question is designed to nudge you to think about how the principles described above apply when both $X$ variables are continuous, rather than one of them (`lostjob`) being binary/categorical.

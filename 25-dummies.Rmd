@@ -1,4 +1,4 @@
-# Dummy variables in regression
+# Dummy variables in regression {#dummy1}
 
 **Learning goal**: Understand what dummy variables are, how they can be incorporated into a regression model, and how to interpret the ensuing results.
 
