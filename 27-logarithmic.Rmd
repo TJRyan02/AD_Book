@@ -2,7 +2,7 @@
 rm(list = ls())
 ```
 
-# Logarithmic Models {#logintro}
+# Logarithmic Models {#logarithmic}
 
 **Learning goal**: Understand when it makes sense to apply a logarithmic transformation to a variable being entered into a regression, and how to intrepret results from a logarithmic model.
 
@@ -103,7 +103,7 @@ This example illustrates a useful property of logarithms: when we apply the natu
 
 ## A different look at GDP and Polity
 
-Having learned what a log transformation can do, let us revisit the regression we estimated in Section \@ref(logintro).
+Having learned what a log transformation can do, let us revisit the regression we estimated in Section \@ref(logarithmic).
 
 ``` {r}
 df$loggdp <- log(df$mad_gdppc) # Log transformation

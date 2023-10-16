@@ -2,7 +2,7 @@
 rm(list = ls())
 ```
 
-# Polynomial Functional Forms
+# Polynomial Functional Forms {#polynomial}
 
 **Learning goal**: Understand how to estimate and interpret results from polynomial models, as well as when to use such models.
 

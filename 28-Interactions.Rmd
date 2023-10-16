@@ -121,7 +121,7 @@ model3b <- lm(trump_dif ~ econperc + as.factor(lostjob) + econperc:lostjob, data
 
 ## Predicted values in interactive models
 
-In Chapters XX and XX, we saw that the coefficients that result from polynomial and logarithmic models have no straightforward interpretation. The same is not true of coefficients in interactive models: they *can* be interpreted on their own, at least if you are clear-minded about the coding of the underlying variables. But the interpretation can still be daunting, especially for models that contain multiple interactions or (not covered in this book) three-way interactions. As before, predicted values are your friend when it comes to both interpretation and communication. You can calculate and discuss predicted values associated with various informative cases.
+In Chapters \@ref(polynomial) and \@ref(logarithmic), we saw that the coefficients that result from polynomial and logarithmic models have no straightforward interpretation. The same is not true of coefficients in interactive models: they *can* be interpreted on their own, at least if you are clear-minded about the coding of the underlying variables. But the interpretation can still be daunting, especially for models that contain multiple interactions or (not covered in this book) three-way interactions. As before, predicted values are your friend when it comes to both interpretation and communication. You can calculate and discuss predicted values associated with various informative cases.
 
 The R work to calculate predicted values, however, requires an extra step compared to the approaches we have seen before. Because the effect of each interacted variable depends on the other, we cannot think of them in isolation, as we have been doing. We need to specify for R what *combinations* of values for the independent variables we wish to examine. Consider the following code:
 
@@ -163,7 +163,7 @@ The difference is subtle, but the two lines in Figure \@ref(fig:interf1) are *no
 
 > **Upshot**: Calculating predicted values for interaction models requires attention to all the variables that interact. In R, this is often accomplished with `expand.grid()`.
 
-We'll close by flagging an important "best practice" related to interaction terms. When a regression model includes an interaction term, it should always include all of the interaction's "constituent" terms as stand-alone regressors. Thus, in Table \@ref(tab:intert2), including the $econperc \times lostjob$ interaction obliged us also to include both $econperc$ and $lostjob$ as stand-alone variables in the model. If the constituent terms are not included,  interpreting the interaction term becomes extremely difficult. For excellent discussions of this issue, and interaction terms generally, see Brambor et al. [-@brambor2006] as well as [-@franzese2009].
+We'll close by flagging an important "best practice" related to interaction terms. When a regression model includes an interaction term, it should always include all of the interaction's "constituent" terms as stand-alone regressors. Thus, in Table \@ref(tab:intert2), including the $econperc \times lostjob$ interaction obliged us also to include both $econperc$ and $lostjob$ as stand-alone variables in the model. If the constituent terms are not included,  interpreting the interaction term becomes extremely difficult. For excellent discussions of this issue, and interaction terms generally, see Brambor et al. [-@brambor2006] as well as Franzese \& Kam  [-@franzese2009].
 
 ## Activities
 
