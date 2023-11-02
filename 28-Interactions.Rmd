@@ -169,7 +169,10 @@ We'll close by flagging an important "best practice" related to interaction term
 
 1.  In Section \@ref(interactioninterp), we calculated predicted values for hypothetical respondents who had the highest or lowest values for `econperc` and `lostjob`. Now, calculate predicted values for respondents with intermediary values as follows:
 
-++ `econperc` = .4 and `lostjob` = 0. ++ `econperc` = .6 and `lostjob` = 0. ++ `econperc` = .4 and `lostjob` = 1. ++ `econperc` = .6 and `lostjob` = 1.
++ `econperc` = .4 and `lostjob` = 0. 
++ `econperc` = .6 and `lostjob` = 0. 
++ `econperc` = .4 and `lostjob` = 1. 
++ `econperc` = .6 and `lostjob` = 1.
 
 2.  When discussing an interactive model such as the one in Column 3 of Table \@ref(tab:intert2), people sometimes call the coefficient associated with one of the constituents of the interaction term (such as the `r round(model3a$coefficients[2], 3)`) associated with `econperc` the "effect" of that variable. But that description is inaccurate and misleading. Write a paragraph articulating why.
 
