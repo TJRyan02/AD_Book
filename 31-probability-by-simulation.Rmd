@@ -1,0 +1,11 @@
+```{r, echo = FALSE}
+rm(list = ls())
+
+library(huxtable)
+library(tidyverse)
+library(knitr)
+```
+
+# Probability by Simulation
+
+

@@ -1,0 +1,37 @@
+```{r, echo = FALSE}
+rm(list = ls())
+```
+
+# Characterizing Uncertainty (or: Now for the Numbers in Parentheses) {#uncertainty_intro}
+
+In Section \@ref(reg_one_dummy), we used survey data to test the notion that Americans aged 33 and older have more positive feelings toward Joe Biden than Americans under the age of 33. We did so with a simple regression wherein relative liking of Joe Biden over Donald Trump (`biden_df`, the DV) was regressed on a dummy variable that takes a value of 1 for respondents who are 33 and older, and 0 otherwise. Table \@ref(tab:uncert1) presents these results in a standard regression table.
+
+``` {r uncert1, echo = F, warning=FALSE, message = FALSE, }
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(ggpubr)
+library(huxtable)
+options(pillar.sigfig = 4) # Set the number of digits to display in examples.
+
+df <- read_csv("datasets/2020anes.csv")
+
+df$biden_dif <- df$biden_therm - df$trump_therm
+df$older[df$age<=33] <- 0
+df$older[df$age>33] <- 1
+model1 <- lm(biden_dif ~ older, data = df)
+
+hux1 <- huxreg(model1, error_pos = "below", statistics = c(N = "nobs", R2 = "r.squared"))
+hux1 <- set_caption(hux1, "Association between age (33+) and relative liking of Biden and Trump.")
+hux1
+
+table(df$older)
+```
+
+As by now you well know, the intercept term tells us that the average value of the DV for people 32 and under is `r round(model1$coefficients[1],3)`---that is, they like Biden `r round(model1$coefficients[1],3)` points more than Trump, on average. The coefficient `r round(model1$coefficients[2],3)` tells us that this same average, when estimated among people 33 and older, is `r abs(round(model1$coefficients[1],3))` points lower. So, older people liked Biden a little be less, or Trump a little bit more.
+
+Could this difference be due just to chance? Think about the question this way: there are roughly 1,500 young and 6,500 older voters in the ANES dataset. Even if, in the whole United States population, there is no genuine association between age and candidate liking, it would be surprising indeed if the difference estimated within the ANES dataset were _exactly_ zero. It would be entirely normal for the difference in averages between the two groups to deviate a bit from zero simply due to idiosyncrasies in who happened to be invited to complete the survey. This reality leaves us in a tricky place. It would be nice if we could look at the difference revealed in our data and say, "A-ha! Age is associated with candidate liking." But for the reasons we just alluded to, the sheer existence of _some_ difference might be consistent with a true underling difference---or with no underlying difference.
+
+This conundrum is a prototypical example of what data analysts want to have tools to characterize uncertainty. It turns out that we don't simply have to throw up our hands: we can go much farther in understanding and describing whether a difference like `r round(model1$coefficients[2],3)` could have arisen sheerly by chance. Such formal descriptions of uncertainty are essential context for many data analytical tasks. For instance, we might want to characterize how sure we are that the business development program in a state is creating new jobs, what range of new voters an expensive mobilization campaign might plausibly generate, or how conclusively data collected in an experiment refute a scientific theory. These are all matters of statistical uncertainty, and this part of _Active Political Analysis_ presents the tools that researchers use to address them.
+
+

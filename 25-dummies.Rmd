@@ -50,7 +50,7 @@ means
 
 Young people (`df$older==0`) like Biden `r round(means[1,2],2)` thermometer points more than Trump. Older people (`df$older==1`) like Biden `r round(means[2,2],2)` points more than Trump. Thus, we have support for the predicted generational divide: young people are more favorable toward Biden than older people, though the difference is fairly small (`r abs(round(means[1,2] - means[2,2],2))` points). (People for whom we are missing age information slightly prefer Trump to Biden.)
 
-## A regression with one dummy
+## A regression with one dummy {#reg_one_dummy}
 
 We've tentatively answered our research question, but the purpose of this module is to learn how to use dummy variables in regression. To begin this discussion, let's estimate a regression using the exact components we already have.
 
