@@ -4,8 +4,247 @@ rm(list = ls())
 library(huxtable)
 library(tidyverse)
 library(knitr)
+library(ggplot2)
+library(directlabels)
 ```
 
 # Probability by Simulation
 
+For a long time, the study of probability proceeded more or less as follows: brilliant mathematicians scrutinized axioms (such as those we encountered in the previous chapter) and derived new insights from them. While this approach was (and continues to be) productive, it has a drawback for learners: following the derivations often requires fairly advanced familiarity with mathematical concepts and notation. One reason books about statistics have a reputation for being daunting is that they are often chock full of discipline-specific jargon and notation.
 
+Over the past decade or two, computing power has become much cheaper and widely accessible---a change that has had major ramifications for research in statistics, but also how it is taught. Greater computing power means that it is now possible to accomplish via straightforward simulations what once required higher-level expertise and inscrutable derivations. As a metaphor, suppose you want to build a house, but you are not sure whether your design is structurally sound. One way to determine whether the design is sound would be to hire a structural engineer to examine the blueprint and offer an expert assessment. An alternative approach would be to run a trial: build the house and see whether or not it falls apart. It sounds ridiculous, but the fact of the matter is that the explosion of computer power has made it feasible to apply "just try it" thinking to statistical inquiries. The trend has made the field far more accessible to learners.
+
+As such, this chapter provides a short introduction to simulation-based approaches to statistical analysis. Going forward, we will not be able to put aside equations and derivations entirely: they still serve an important role. But by having simulation-based approaches as part of our repertoire, we will be able to convey several key concepts in more intuitive ways.
+
+>**Upshot**: Computer-based simulatuoins can be used to understand probability, and they are often easier to understand than deductive or formula-based approaches.
+
+## A simple example
+
+Imagine two countries that are political and military rivals, similar the United States and the Soviet Union during the Cold War. The countries engage in regular posturing and provocations, intended to signal their strength and preparedness for war---combat exercises, test missile launches, showcasing of new weapons and so forth. For the most part, each side understands that the other is merely demonstrating its capabilities---not initiating  actual aggression. But there is always a risk of being misunderstood---of having simple posturing being mistaken for a real action that would require a real response.^[On June 3, 1980, early alert systems in the United States indicated that the Soviet Union had launched a full-scale surprise attack on the United States, precipitating US missile crews to prepare for an immediate counterstrike. The attack was determined to be a false alarm (caused by a faulty computer chip) just minutes before National Security Advisor Zbigniew Brzezinski called President Jimmy Carter to recommend a retaliatory strike. See https://www.newyorker.com/news/news-desk/world-war-three-by-mistake.] Suppose that the risk of accidental war in any particular year is 1%.
+
+How risky is this situation? That is, how long is it likely to go on, before war breaks out? The question is a little tricky. Clearly the chance of war next year is small---just 1%. It might seem like war is certain to break out within 100 years, but this is fallacious thinking, since probabilities are not additive in this way. After all, the chance of a coin landing on heads in any flip is 0.5, but the probability of a coin landing on heads within two flips is certainly not 1.0. Sometimes unusual things happen.
+
+The question can be answered by applying formulas associated with the Binomial distribution, as we will explore in the next chapter. Here, though, we'll come up with an answer by running a simulation.
+
+To begin, let us introduce you to R's `sample` command. The `sample` command has the syntax
+
+`sample(x, size, replace = FALSE, prob = NULL)`.
+
+In this syntax, `x` is usually a vector with elements that R is going to sample from.^[Or if you make `x` be a number, R will sample from the numbers between 1 and the chosen number.] `size` is the number of elements that will be sampled. The `replace` argument indicates whether the elements can be sampled more than one time. And the `prob` argument allows you to specify that some elements should be sampled with higher probability than others. For some examples:
+
+1. Simulate a single coin flip:
+
+``` {r}
+sample(c("Heads", "Tails"), size = 1)
+```
+
+2. Simulate five coin flips:
+
+``` {r}
+sample(c("Heads", "Tails"), replace = TRUE, size = 5)
+```
+
+3. Simulate rolling a 6-sided die, 10 times:
+
+``` {r}
+sample(1:6, replace = TRUE, size = 10)
+```
+
+4. Simulate rolling an _unfair_ die 10 times. The die is rigged such that the number 3 will come up disproportionately often.
+
+``` {r}
+sample(1:6, replace = TRUE, size = 10, prob = c(.05,.05,.75,.05,.05,.05))
+```
+
+Getting the hang of it?
+
+For the next step, we will think about how to tailor the `sample` function to match the situation we want to understand. To do so, we will sample the elements `No war` and `War`. We will do so 1000 times, representing the succession of 1000 years. And in keeping with the setup, we will make the probability of war in any year be 0.01. The `match` function in the code snippet below is a way to return the position number of the first element of a vector that matches a specified value.
+
+``` {r}
+set.seed(1789)
+```
+
+``` {r}
+years <- sample(c("No war", "War"), size = 1000, replace = TRUE, prob = c(.99,.01))
+firstwar <- match("War", years) # When did war break out?
+years[1:firstwar] # Showing just elements up to the first war, to reduce output.
+```
+
+In this simulation, war broke out in year `r match("War", years)`.
+
+We are getting somewhere. The simple simulation above tells us that `r match("War", years)` is a plausible outcome. Of course, we do not yet know how _typical_ this outcome is. Perhaps the single simulation we run above generated an extraordinary outcome, just by chance.
+
+To assess this possibility, and to learn quite a lot more about our scenario, we can scale the simulation up to the next level, doing it not just once, but 1,000 times. Doing so will help us understand what delays before the onset of war are typical versus extraordinary.
+
+In the code snippet below, the first line "initializes" an object that will be used to store the results of a simulation that is going to be run 1,000 times. This step is required, because otherwise R has no place to store the results it is about to produce. Then, we have a loop (the main simulation) that will run 1,000 times. Each iteration of the loop includes a trial (itself composed of 1000 smaller trials)  identical to the one we just ran. And finally, the last line inside the loop stores the key result of the current iteration---when did war break out?---in position `i` of the initialized object.
+
+``` {r}
+sim_results <- data.frame(result = numeric(0)) # Initialize an object to hold simulation results.
+
+for (i in 1:1000) {
+
+years <- sample(c("No war", "War"), replace = TRUE, prob = c(.99,.01), size = 1000) # Simulate 1000 years.
+
+sim_results[i,] <- match("War", years) # Store the result of this simulation in position i of the initialized object.
+
+}
+```
+
+As you can see, this loop runs 1,000 times, and each run includes 1,000 sampling operations, for 1,000,000 distinct operations. On most computers, this will still take only a fraction of a second. But you are beginning to perceive how the available computer processing power matters for the ability to conduct statistical simulations: they can be far more complex than this simple example.
+
+After the simulation runs, we are left with an object---`sim_results$result`---that can tell us interesting things. First, we can run `median(sim_results$result, na.rm = TRUE)` and determine that the median number of years before the onset of war is `r median(sim_results$result, na.rm = TRUE)`. Remarkably, in the next chapter, we will use a formula-based approach to show that the exact answer is 68.96756, which is quite close. What's more, if we were willing to let the computer code run for a few more second---running 10,000 simulations, rather than 1,000, say---we would very likely get even closer to the formula-derived result.
+
+We can learn other things from the simulation, too. For instance, rather than just the median number of years before war, we might want to know what _range_ of results is plausible. One common benchmark is to examine the middle 95% of simulation results, as follows:
+
+``` {r}
+quantile(sim_results$result, probs = c(.025, .975))
+```
+
+The results mean that, given the assumptions that undergrid our simulation, there is about a 2.5% chance of war occurring within `r quantile(sim_results$result, probs = c(.025, .975))[1]` years, and about a 97.5% change of war occurring within `r quantile(sim_results$result, probs = c(.025, .975))[2]` years. An upshot of this exercise is that a 1% chance of war on an annual basis is a pretty scary thing: war would be likely to break out within one person's lifetime (given the media result), and there is a disconcerting chance of it happening much sooner than that.
+
+>**Upshot**: A simluation just a few lines long demonstrates that, in the scenario articulated, the median time before war will break out is about `r median(sim_results$result)` years. 
+
+## How many simulations to run?
+
+In the previous section, the simulation ran 1,000 times ( from `for (i in 1:1000)`). Where did this number come from, and how many times should a simulation run?
+
+The answer might embody less scientific precision than you'd expect. In the abstract, more simulation runs are better. For instance, the more times a simulation runs, the more precisely it will recover the underlying estimate of interest (a median of 68.96756 in the last section). Additionally, the more times a simulation runs, the better it will characterize the relative frequency of various events. In the last section, we sought a simulation that would help us understand the relative likelihood of events that were both common (such as war happening after about 68 years) and quite rare (such as war breaking out in year 1). After all, part of the simulation's purpose is to help us understand the relative frequency of such events, so we need to observe some of each.
+
+For many applications, 1,000 iterations will be enough to accomplish these goals. However, we hasten to add that this rule of thumb can break down. A theoretical physicist might be highly motivated to understand the likelihood of two very rare events co-occurring, since if they did, it would cause a nuclear reactor to explode. This task might require millions or billions of iterations.
+
+If more is better, why not simply err on the high side and run simulations many times? In general, this is a good strategy, though it can run into obstacles. Even for simple simulations, it can become time-consuming and unwieldy to run a simulation millions of times. For instance, the R object storing the results might take up too much computer memory.^[As one dives further and further into the enterprise of conducting simulations, it becomes more and more important to optimize one's computer code. Commonly, a computer can execute the instructions given to it faster or slower, depending on exactly how the code is written. A simulation that could run in a few minutes if written with optimized code might take months or years to write with inefficient code. Since this book is for learners and since the simulations we will encounter are not especially complex, we have prioritized clarity of presentation over computational efficiency.] And the gains from conducting one million rather than one thousand simulations might be modest or even trivial.
+
+Our pragmatic recommendation is to start the number of simulations to a small number why you write and edit your code. A simulation does not have to run thousands or even hundreds of times for you to inspect whether it is doing what you want it to do. Then, when you are confident that the approach is right, increase the number of iterations to produce the results that you seek. Our usual approach is to conduct 10 or 100 iterations while the code is in development, and then switch to 1,000 or 10,000 iterations for the results that we intend to share and make public.
+
+>**Upshot**: More simulation iterations are better than fewer, but it is reasonable to be limited by practical constraints, such as computer runtime. 
+
+## Simulations and reproducability
+
+The reality that simulations rely on randomly generated numbers introduces some difficulties. Consider:
+
+* Elizabeth has finished writing code for an assignment and is writing up the results. She is 90% done when her computer crashes. She has saved her code, so it is not lost. But she needs to run the simulation again, and now the results she described before the crash will be out of sync with those she'll produce on a second run. Does she need to redo the assignment from scratch to bring everything into harmony?
+
+* Michael writes publishes an important article involving a simulation in a prestigious journal. David reads the article and is suspicious. He thinks that Michael's results are fraudulent---constructed manually to show a particular result (a grievous scholarly crime). He obtains Michael's code, runs the simulation on his computer, and arrives at a different answer. But of course he would! David's computer would generate different random numbers than Michael's so there is no reason to expect the results to be exactly the same.
+
+* Justus and Ebony, working collaboratively, think that they have written identical simulations on each of their two computers. Of course, when each runs their simulation, they produce different results. (How could they not?) How can they check that the two simulations are actually identical, and are producing equivalent results?
+
+There is a solution to issues such as these, though explaining it requires a brief discussion of how computers generate random numbers. In fact, since the processes that operate inside a standard computer are deterministic, computers are incapable of producing genuinely random numbers.^[What does it mean for something to be genuinely random? The question is more difficult and philosophical than it might appear at first blush. For a book-length discussion, see Bennett [-@bennett1998]. We wrote that "standard" computers are incapable of generating genuinely random numbers because there are specialized computers tailored for the purpose. For instance, Intel produces a computer chip (RDRAND) that generates random numbers by ] Instead, they rely on algorithms that generate "pseudo" random numbers. These are numbers that, while not random in the strictest technical sense, have all the key attributes of random numbers (e.g. unpredictability) and are perfectly workable for applications like ours.
+
+Such algorithms begin with a "seed," which is a number used to initialize the algorithm. The actual process is far more complicated, but a random number seed works analogously to someone saying, "Give me a number $X$ and I will produce a series of numbers that are $X^2$, $(X+1)^2$, $(X+3)^2$, $(X+4)^2$, and so on." In either case, the sequence of numbers that gets produced is a function of the seed.
+
+In the absence of instructions to do otherwise, R heightens the sense of randomness by drawing its random seed from your computer's internal clock. This is why running the same sampling command twice in a row generates different results, as in:
+
+``` {r}
+sample(1:10, size = 10, replace = TRUE)
+sample(1:10, size = 10, replace = TRUE)
+```
+
+But R also allows us to set our own randomization seed, using the `set.seed()` function. Compare the results of the following snippet to the snippet above:
+
+``` {r}
+set.seed(8675309)
+sample(1:10, size = 10, replace = TRUE)
+set.seed(8675309)
+sample(1:10, size = 10, replace = TRUE)
+```
+
+R now produces the exact same random numbers, since these numbers are a deterministic function of the seed, and we set an identical seed in both cases.
+
+The `set.seed()` function at least partly addresses the conundrums we described at the start of this section. By specifying a random seed at the start of her code, Elizabeth should be able to reproduce the results that she lost when her computer crashed. Similarly, the other researchers should be able to reproduce results produced on someone else's computer. A word of caution here, though: exact reproduction of someone else's results requires matching their computer environment perfectly. CRAN, the community that maintains the R software, has been known to update R's random number generating algorithm. It can also be essential to match the two users' package versions and even operating systems. So don't despair if you are not able to reproduce a classmate's results exactly.^[The command `RNGkind()` will cause R to report details on what algorithm it is currently using the generate random numbers. See `help(RNGversion)` for details.]
+
+What number should you use to initialize your random number generator? It hardly matters. Whatever number you choose R will produce a reliable stream of good-as-random numbers. But, can you experiment with random seeds until you find one that generates the results you desire? Of course not. This would be a form of unethical data mining. One of your authors commonly chooses the seed you see above---8675309---because it is a subtle allusion to a popular song, which helps to establish that it was chosen for humorous reasons, and not because the choice served to "cook the books".
+
+>**Upshot**: It is generally good practice to use R's `set.seed()` function to stabilize the output of R's random number generator.
+
+## Activities
+
+1. In section \@ref(independence), you learned the definition of statistical independence. The following activity uses a simulation to explore the contrast between the _expectation_ of statistical independence, and the presence of independence in a particular dataset.
+
+a. Consider the act of flipping a fair coin. In the abstract, do you expect coin flips to be statistically independent of the location of the flip? For instance, if you flip a fair coin on two opposite sides of a room, would you expect the probability of the coin landing on head ($P(\mathrm{heads})$) to be independent of where the flips take place?
+
+b. The code below simulates an experiment wherein you stand on the left side of a room and flip a coin 50 times, and then walk to the right side of the room to flip the same coin 50 more times. After each experiment, it records $P(\mathrm{heads})$, $P(\mathrm{left})$, $P(\mathrm{heads|left})$ and $P(\mathrm{left|heads})$. The simulation runs 500 times.
+
+Run this code and examine the results. Using the results, report for how many of the simulations coin flips turned out to be perfectly statistically independent of flip location.
+
+``` {r, eval = F}
+ind_tests <- data.frame(pheads = numeric(0), pleft = numeric(0), pheads_givenleft = numeric(0), pleft_givenheads = numeric(0))
+
+for (i in 1:500) {
+  x <- sample(c("heads", "tails"), size = 100, replace = TRUE)
+  y <- c(rep("left", 50), rep("right", 50))
+
+ind_tests[i,] <- c(
+  mean(x=="heads"),
+  mean(y=="left"),
+  mean(x[y=="left"]=="heads"),
+  mean(y[x=="heads"]=="left")
+  )
+}
+```
+
+c. Based on what you've done, write a paragraph commenting on the relationship between the _expectation_ of statistical independence and independence within a sample. Note that if the expectation of statistical independence does not guarantee actual empirical independence, it would be an important insight, for it might motivate using control variables or other statistical adjustments even when analyzing a variable that was randomly assigned.^[Though this is a controversy in the research community. See Mutz & Permantle [-@mutz2015].]
+
+2. As you likely know, in the United States, criminal culpability is determined by a jury. Juries typically include twelve people, though nothing in the US Constitution requires this number. For this question, we will consider how the probability of a jury as a whole reaching a correct verdict varies as a function of the number of jurors, as well as their individual abilities to reach correct judgments.
+
+First, consider the case where there are 12 jurors and each has a 55% chance to vote correctly (and therefore a 45% chance to vote incorrectly). Write a simulation to determine to determine the probability that the jury as a whole reaches a correct decision. For this question and all that follow, we will stipulate that the jury as a whole reaches a correct decision if a simple majority of jurors vote correctly. Therefore, we are putting aside the unanimity requirement the typically applies to juries (imagine that jurors in the minority eventually acquiesce to majority). And a 6/6 tie vote counts as an incorrect decision.
+
+``` {r, echo = FALSE}
+correct <- data.frame(correct = numeric(0))
+
+for (i in 1:1000) {
+  vote <- sample(c("Correct","Incorrect"), size = 12, replace = TRUE, prob = c(.55,.45))
+
+  correct[i,] <- sum(vote=="Correct")>=7
+}
+
+mean(correct$correct)
+```
+
+3. Jurors can be hard to recruit, since many citizens actively try to avoid jury. Occasionally, there are proposals to decrease the number of people required to sit for a jury, to lower the administrative burden. In fact, Florida allows six-person juries for non-capital criminal cases.^[See Evan Moore and Tali Panken "Jury Size: Less is not More." Available at https://courses2.cit.cornell.edu/sociallaw/student_projects/JurySize_lessisnotmore.html.]
+
+Let us use a simulation to evaluate this practice more carefully. To do so, create a plot showing how the probability of a correct decision varies as a function of 1) size of the jury and 2) each juror's individual probability of voting correctly. Specifically, create a plot where the x-axis represents the _individual_ probability of a correct vote and the y-axis represents the probability of a correct _group_ decision. Here are more specific instructions:
+
+* Vary the probability of an individual correct vote (on the x-axis) from 0.40 to 0.80.
+
+* For each probability, simulate 500 whole-group decisions. The y-axis value will be the proportion of these group decisions that were correct.
+
+* Create three separate trend lines: one for a 6-person jury, one for a 12-person jury, and one for a 50-person jury.
+
+Using your plot write a one-paragraph memo commenting on the wisdom of decreasing jury size from 12 to 6.
+
+``` {r, echo = F, eval = F}
+correct <- data.frame(pcorrect = logical(0), prob = numeric(0), size = character(0), stringsAsFactors = FALSE)
+
+for (probi in (40:80)) {
+  for (i in 1:1000) {
+  votes <- sample(c("Correct","Incorrect"), size = 50, replace = TRUE, prob = c(probi/100,(1-probi/100)))
+
+thissim <- data.frame(
+  pcorrect = c(
+    sum(votes[1:6]=="Correct") >= 4,
+    sum(votes[1:12]=="Correct") >= 7,
+    sum(votes=="Correct") >= 26), 
+  prob = c(probi, probi, probi),
+  size = c(6,12,50))
+  
+correct <- rbind(correct, thissim)
+  }
+}
+```
+
+``` {r, echo = F, eval = F}
+by_prob <- correct %>% 
+  group_by(prob, size, ) %>%
+  summarize(group_correct = mean(pcorrect==TRUE))
+
+by_prob$size <- as.factor(by_prob$size)
+
+p <- ggplot(by_prob, aes(x=prob, y=group_correct, color = size)) + geom_line() + theme_bw()
+
+p <- direct.label(p, list(last.points, hjust = -0.1)) 
+
+p
+```
+
+``` {r}
+```

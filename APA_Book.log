@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.5.19)  7 DEC 2023 13:15
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.5.19)  11 DEC 2023 15:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1299,20 +1299,52 @@ File: images/wddm_comb.png Graphic file (type bmp)
 <images/wddm_comb.png>
 [67
 
-] [68] [69] [70] [71] [72] [73] [74] [75] (./APA_Book.bbl [76]) [77
+] [68] [69] [70] [71] [72] [73] [74] [75] [76]
+Chapter 10.
+[77
 
-] (./APA_Book.aux)
+] [78]
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+[]\TU/lmtt/m/n/10 ##  [1] "No war" "No war" "No war" "No war" "No war" "No war"
+ "No war" "No war"[] 
+ []
+
+
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+[]\TU/lmtt/m/n/10 ##  [9] "No war" "No war" "No war" "No war" "No war" "No war"
+ "No war" "No war"[] 
+ []
+
+
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+[]\TU/lmtt/m/n/10 ## [17] "No war" "No war" "No war" "No war" "No war" "No war"
+ "No war" "No war"[] 
+ []
+
+
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+[]\TU/lmtt/m/n/10 ## [25] "No war" "No war" "No war" "No war" "No war" "No war"
+ "No war" "No war"[] 
+ []
+
+[79] [80] [81] [82] [83] [84] [85] [86]
+Chapter 11.
+(./APA_Book.bbl [87
+
+] [88
+
+]) [89] (./APA_Book.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 26789 strings out of 476179
- 536683 string characters out of 5809544
- 979428 words of memory out of 5000000
- 47106 multiletter control sequences out of 15000+600000
+ 26807 strings out of 476179
+ 536942 string characters out of 5809544
+ 980779 words of memory out of 5000000
+ 47124 multiletter control sequences out of 15000+600000
  475896 words of font info for 92 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  86i,13n,121p,1494b,916s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on APA_Book.pdf (77 pages).
+Output written on APA_Book.pdf (89 pages).

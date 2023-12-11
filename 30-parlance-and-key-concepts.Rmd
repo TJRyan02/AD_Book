@@ -141,7 +141,7 @@ This results makes sense. If we knew we were considering a pair of countries tha
 
 > **Upshot**: Conditional probability is the set of mathematical tools used to update the probability of some event given that some other event has occurred. It is calculated as a function of joint and marginal probabilities.
 
-## Statistical independence
+## Statistical independence  {#independence}
 
 Closely related to the idea of conditional probability is the idea of statistical independence. But, statistical independence is important enough to merit its own section. It is the idea that the probability of some event ($A$) is _not_ conditional on a separate event ($B$), and vice versa. That is, the probability of $A$ does not change at all once we learn the status of ($B$), nor does $P(B)$ change when we learn about A. More formally,
 
