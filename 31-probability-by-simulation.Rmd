@@ -8,7 +8,7 @@ library(ggplot2)
 library(directlabels)
 ```
 
-# Probability by Simulation
+# Probability by Simulation {#simandprob}
 
 For a long time, the study of probability proceeded more or less as follows: brilliant mathematicians scrutinized axioms (such as those we encountered in the previous chapter) and derived new insights from them. While this approach was (and continues to be) productive, it has a drawback for learners: following the derivations often requires fairly advanced familiarity with mathematical concepts and notation. One reason books about statistics have a reputation for being daunting is that they are often chock full of discipline-specific jargon and notation.
 
@@ -18,7 +18,7 @@ As such, this chapter provides a short introduction to simulation-based approach
 
 >**Upshot**: Computer-based simulatuoins can be used to understand probability, and they are often easier to understand than deductive or formula-based approaches.
 
-## A simple example
+## A simple example {#warsim}
 
 Imagine two countries that are political and military rivals, similar the United States and the Soviet Union during the Cold War. The countries engage in regular posturing and provocations, intended to signal their strength and preparedness for war---combat exercises, test missile launches, showcasing of new weapons and so forth. For the most part, each side understands that the other is merely demonstrating its capabilities---not initiating  actual aggression. But there is always a risk of being misunderstood---of having simple posturing being mistaken for a real action that would require a real response.^[On June 3, 1980, early alert systems in the United States indicated that the Soviet Union had launched a full-scale surprise attack on the United States, precipitating US missile crews to prepare for an immediate counterstrike. The attack was determined to be a false alarm (caused by a faulty computer chip) just minutes before National Security Advisor Zbigniew Brzezinski called President Jimmy Carter to recommend a retaliatory strike. See https://www.newyorker.com/news/news-desk/world-war-three-by-mistake.] Suppose that the risk of accidental war in any particular year is 1%.
 
@@ -92,7 +92,19 @@ sim_results[i,] <- match("War", years) # Store the result of this simulation in 
 
 As you can see, this loop runs 1,000 times, and each run includes 1,000 sampling operations, for 1,000,000 distinct operations. On most computers, this will still take only a fraction of a second. But you are beginning to perceive how the available computer processing power matters for the ability to conduct statistical simulations: they can be far more complex than this simple example.
 
-After the simulation runs, we are left with an object---`sim_results$result`---that can tell us interesting things. First, we can run `median(sim_results$result, na.rm = TRUE)` and determine that the median number of years before the onset of war is `r median(sim_results$result, na.rm = TRUE)`. Remarkably, in the next chapter, we will use a formula-based approach to show that the exact answer is 68.96756, which is quite close. What's more, if we were willing to let the computer code run for a few more second---running 10,000 simulations, rather than 1,000, say---we would very likely get even closer to the formula-derived result.
+After the simulation runs, we are left with an object---`sim_results$result`---that can tell us interesting things. First, we can inspect a histogram of its values.
+
+``` {r warsimplot, fig.cap = "Years before the outbreak of war, given a 1% annual probability."}
+p <- ggplot(sim_results, aes(x = result)) + geom_histogram(bins = 50) + labs(x = "Years before war", y = "Frequency")
+
+# Label the x-axis every 50 years
+p <- p + scale_x_continuous(breaks = seq(0, 600, 50))
+p
+```
+
+The histogram shows that war commonly occurs in the first 50 years. Delays of 300 years are rare, and delays of more than 500 years are exceptional. This histogram is our first encounter with a _probability distribution_. (Technically, since it comes from a simulation, it is an approximation of a probability distribution.) We will learn more about probability distributions in the next chapter. For now, we can think of a probability distribution as a way to describe the relative frequency of different possible outcomes to a probabilistic event.
+
+We can examine our simulation results in greater detail. For instance, we can run `median(sim_results$result, na.rm = TRUE)` and determine that the median number of years before the onset of war is `r median(sim_results$result, na.rm = TRUE)`. Remarkably, in the next chapter, we will use a formula-based approach to show that the exact answer is 69, which is quite close. What's more, if we were willing to let the computer code run for a few more seconds---running 10,000 simulations, rather than 1,000, say---we would very likely get even closer to the formula-derived result.
 
 We can learn other things from the simulation, too. For instance, rather than just the median number of years before war, we might want to know what _range_ of results is plausible. One common benchmark is to examine the middle 95% of simulation results, as follows:
 
@@ -102,7 +114,7 @@ quantile(sim_results$result, probs = c(.025, .975))
 
 The results mean that, given the assumptions that undergrid our simulation, there is about a 2.5% chance of war occurring within `r quantile(sim_results$result, probs = c(.025, .975))[1]` years, and about a 97.5% change of war occurring within `r quantile(sim_results$result, probs = c(.025, .975))[2]` years. An upshot of this exercise is that a 1% chance of war on an annual basis is a pretty scary thing: war would be likely to break out within one person's lifetime (given the media result), and there is a disconcerting chance of it happening much sooner than that.
 
->**Upshot**: A simluation just a few lines long demonstrates that, in the scenario articulated, the median time before war will break out is about `r median(sim_results$result)` years. 
+>**Upshot**: A simluation just a few lines long can sketch the probability distribution associated with a random event. In the scenario articulated, the simulation demonstrates that the median time before war will break out is about `r median(sim_results$result)` years. 
 
 ## How many simulations to run?
 
@@ -156,7 +168,7 @@ What number should you use to initialize your random number generator? It hardly
 
 >**Upshot**: It is generally good practice to use R's `set.seed()` function to stabilize the output of R's random number generator.
 
-## Activities
+## Activities {#probsimactivity}
 
 1. In section \@ref(independence), you learned the definition of statistical independence. The following activity uses a simulation to explore the contrast between the _expectation_ of statistical independence, and the presence of independence in a particular dataset.
 
@@ -200,7 +212,11 @@ for (i in 1:1000) {
 mean(correct$correct)
 ```
 
-3. Jurors can be hard to recruit, since many citizens actively try to avoid jury. Occasionally, there are proposals to decrease the number of people required to sit for a jury, to lower the administrative burden. In fact, Florida allows six-person juries for non-capital criminal cases.^[See Evan Moore and Tali Panken "Jury Size: Less is not More." Available at https://courses2.cit.cornell.edu/sociallaw/student_projects/JurySize_lessisnotmore.html.]
+``` {r, echo = FALSE}
+# Do something with poll margin of error. Given x voters, what is the probability that poll will erroneously show Biden ahead of Trump even though Trump is ahead of Biden?
+```
+
+3. Jurors can be hard to recruit, since many citizens actively try to avoid jury. Occasionally, there are proposals to decrease the number of people required to sit for a jury, to lower the administrative burden. In fact, Florida allows six-person juries for non-capital criminal cases.^[See Evan Moore and Tali Panken, "Jury Size: Less is not More." Available at https://courses2.cit.cornell.edu/sociallaw/student_projects/JurySize_lessisnotmore.html.]
 
 Let us use a simulation to evaluate this practice more carefully. To do so, create a plot showing how the probability of a correct decision varies as a function of 1) size of the jury and 2) each juror's individual probability of voting correctly. Specifically, create a plot where the x-axis represents the _individual_ probability of a correct vote and the y-axis represents the probability of a correct _group_ decision. Here are more specific instructions:
 
@@ -246,5 +262,8 @@ p <- direct.label(p, list(last.points, hjust = -0.1))
 p
 ```
 
-``` {r}
+4. Suppose you are interviewing a random sample of American citizens about who they are going to vote for, for president. Each person can give only two responses: "I prefer Bert to Ernie", or "I prefer Ernie to Bert." Using a simulation, create a table showing the probability that your survey will reveal Ernie to be in the lead, depending on 1) Bert's true underlying lead in the population and 2) the number of people you interview, as shown in the following figure:
+
+``` {r berternie2, echo = F, out.width="80%", fig.cap = "Key Probability Functions in R."}
+knitr::include_graphics("images/berternie.png")
 ```

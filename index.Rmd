@@ -19,9 +19,8 @@ cover-image: "construction.png"
 
 # Preamble {-}
 
-We are writing the book because other books in this area are not very friendly, and assume too much knowledge on the part of the student.
+We are writing the book because other books in this area are not as friendly as they could be. Please use the navigation pane on the left to choose a chapter. Chapters before "The Friendly Flexible Linear Model" do not really exist.
 
-This is a _sample_ book written in **Markdown**. You can use anything that Pandoc's Markdown supports, e.g., a math equation $a^2 + b^2 = c^2$.
 
 ```{r include=FALSE}
 library(ggplot2)

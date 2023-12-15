@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.5.19)  11 DEC 2023 15:05
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.5.19)  15 DEC 2023 12:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1063,7 +1063,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 [9]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 202.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 200.
 
 Overfull \hbox (294.18076pt too wide) has occurred while \output is active
 \TU/lmr/m/n/10 10 \TU/lmr/m/sl/10 CHAPTER 2.  WHY CAN’T I JUST USE A SPREADSHEE
@@ -1098,31 +1098,31 @@ Underfull \vbox (badness 7133) has occurred while \output is active []
 File: APA_Book_files/figure-latex/dummy1-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/dummy1-1.pdf>
 [20] [21] [22]
-Overfull \hbox (27.75pt too wide) in paragraph at lines 456--456
+Overfull \hbox (27.75pt too wide) in paragraph at lines 454--454
 []\TU/lmtt/m/n/10 ## lm(formula = biden_dif ~ age30_39 + age40_49 + age50_59 + 
 age60plus,[] 
  []
 
 
-Overfull \hbox (1.5pt too wide) in paragraph at lines 456--456
+Overfull \hbox (1.5pt too wide) in paragraph at lines 454--454
 []\TU/lmtt/m/n/10 ## (Intercept)     age30_39     age40_49     age50_59    age6
 0plus[] 
  []
 
 
-Overfull \hbox (1.5pt too wide) in paragraph at lines 456--456
+Overfull \hbox (1.5pt too wide) in paragraph at lines 454--454
 []\TU/lmtt/m/n/10 ##      14.575       -4.152       -1.957      -11.980       -
 5.779[] 
  []
 
 [23]
-Overfull \hbox (38.25pt too wide) in paragraph at lines 484--484
+Overfull \hbox (38.25pt too wide) in paragraph at lines 482--482
 []\TU/lmtt/m/n/10 ##      (Intercept)  agefactor(29,39]  agefactor(39,49]  agef
 actor(49,59][] 
  []
 
 
-Overfull \hbox (38.25pt too wide) in paragraph at lines 484--484
+Overfull \hbox (38.25pt too wide) in paragraph at lines 482--482
 []\TU/lmtt/m/n/10 ##           14.575            -4.152            -1.957      
      -11.980[] 
  []
@@ -1130,67 +1130,67 @@ Overfull \hbox (38.25pt too wide) in paragraph at lines 484--484
 File: APA_Book_files/figure-latex/agedum5-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/agedum5-1.pdf>
 
-Overfull \hbox (27.75pt too wide) in paragraph at lines 532--532
+Overfull \hbox (27.75pt too wide) in paragraph at lines 530--530
 []\TU/lmtt/m/n/10 ## lm(formula = biden_dif ~ age18_29 + age30_39 + age40_49 + 
 age50_59 +[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 532--532
+Overfull \hbox (69.75pt too wide) in paragraph at lines 530--530
 []\TU/lmtt/m/n/10 ## (Intercept)     age18_29     age30_39     age40_49     age
 50_59    age60plus[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 532--532
+Overfull \hbox (69.75pt too wide) in paragraph at lines 530--530
 []\TU/lmtt/m/n/10 ##       8.796        5.779        1.627        3.822       -
 6.201           NA[] 
  []
 
 [24] [25] [26]
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##                         (Intercept)       religionEvangeli
 cal Protestant[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##                             33.6667                       
       -48.2529[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##                      religionJewish          religionMainl
 ine Protestant[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##                              9.7495                       
       -28.2649[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##               religionNot religious              religionO
 ther Christian[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##                              0.9764                       
       -38.4169[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##              religionOther religion               religion
 Roman Catholic[] 
  []
 
 
-Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
+Overfull \hbox (48.75pt too wide) in paragraph at lines 591--591
 []\TU/lmtt/m/n/10 ##                              8.8561                       
       -26.6266[] 
  []
@@ -1198,12 +1198,12 @@ Overfull \hbox (48.75pt too wide) in paragraph at lines 593--593
 [27]
 
 LaTeX Warning: Reference `fig:dummy2plots' on page 28 undefined on input line 6
-21.
+19.
 
 File: APA_Book_files/figure-latex/dummy2plots-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/dummy2plots-1.pdf>
 
-Underfull \hbox (badness 10000) in paragraph at lines 623--625
+Underfull \hbox (badness 10000) in paragraph at lines 621--623
 [][]
  []
 
@@ -1212,7 +1212,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 623--625
 ]
 Chapter 5.
 
-Overfull \vbox (0.15999pt too high) detected at line 667
+Overfull \vbox (0.15999pt too high) detected at line 665
  []
 
 [31]
@@ -1228,7 +1228,7 @@ File: APA_Book_files/figure-latex/covid-nyc-2-1.pdf Graphic file (type pdf)
 File: APA_Book_files/figure-latex/quad6-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/quad6-1.pdf>
 [35] [36]
-Underfull \hbox (badness 1931) in paragraph at lines 867--867
+Underfull \hbox (badness 1931) in paragraph at lines 865--865
 []\TU/lmr/bx/n/14.4 Interpreting Coefficients in a Quadratic
  []
 
@@ -1249,13 +1249,13 @@ File: APA_Book_files/figure-latex/gpdfig1-1.pdf Graphic file (type pdf)
 File: APA_Book_files/figure-latex/log2-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/log2-1.pdf>
 
-LaTeX Warning: Reference `fig:log2' on page 46 undefined on input line 1132.
+LaTeX Warning: Reference `fig:log2' on page 46 undefined on input line 1130.
 
 
-LaTeX Warning: Reference `fig:log2' on page 46 undefined on input line 1132.
+LaTeX Warning: Reference `fig:log2' on page 46 undefined on input line 1130.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1131--1133
+Underfull \hbox (badness 10000) in paragraph at lines 1129--1131
 []
  []
 
@@ -1269,7 +1269,7 @@ IES OF A DISTRIBUTION. \TU/lmr/m/n/10 47
  []
 
 [47]
-Overfull \hbox (133.21005pt too wide) in paragraph at lines 1150--1163
+Overfull \hbox (133.21005pt too wide) in paragraph at lines 1148--1161
  [][] 
  []
 
@@ -1304,47 +1304,87 @@ Chapter 10.
 [77
 
 ] [78]
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
 []\TU/lmtt/m/n/10 ##  [1] "No war" "No war" "No war" "No war" "No war" "No war"
  "No war" "No war"[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
 []\TU/lmtt/m/n/10 ##  [9] "No war" "No war" "No war" "No war" "No war" "No war"
  "No war" "No war"[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
 []\TU/lmtt/m/n/10 ## [17] "No war" "No war" "No war" "No war" "No war" "No war"
  "No war" "No war"[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2397--2397
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
 []\TU/lmtt/m/n/10 ## [25] "No war" "No war" "No war" "No war" "No war" "No war"
  "No war" "No war"[] 
  []
 
-[79] [80] [81] [82] [83] [84] [85] [86]
+[79]
+File: APA_Book_files/figure-latex/warsimplot-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/warsimplot-1.pdf>
+[80] [81] [82] [83] [84] [85] [86]
+File: images/berternie.png Graphic file (type bmp)
+<images/berternie.png>
+[87] [88
+
+]
 Chapter 11.
-(./APA_Book.bbl [87
+[89] [90] [91]
+File: APA_Book_files/figure-latex/bernoullicdf-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/bernoullicdf-1.pdf>
+[92] [93] [94] [95]
+File: APA_Book_files/figure-latex/unnamed-chunk-63-1.pdf Graphic file (type pdf
+)
+<use APA_Book_files/figure-latex/unnamed-chunk-63-1.pdf>
 
-] [88
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-]) [89] (./APA_Book.aux)
+[96] [97]
+File: APA_Book_files/figure-latex/normals-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/normals-1.pdf>
+[98]
+File: APA_Book_files/figure-latex/normdist-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/normdist-1.pdf>
+[99]
+File: APA_Book_files/figure-latex/musigma-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/musigma-1.pdf>
+[100] [101]
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 14.4pt on input line 2914.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 14.4013pt on input line 2914.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 14.39845pt on input line 2914.
+File: APA_Book_files/figure-latex/tdist-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/tdist-1.pdf>
+[102] [103]
+File: images/distfuncs.png Graphic file (type bmp)
+<images/distfuncs.png>
+[104] [105]
+File: images/berternie.png Graphic file (type bmp)
+<images/berternie.png>
+[106] (./APA_Book.bbl [107] [108
+
+]) [109] (./APA_Book.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 26807 strings out of 476179
- 536942 string characters out of 5809544
- 980779 words of memory out of 5000000
- 47124 multiletter control sequences out of 15000+600000
- 475896 words of font info for 92 fonts, out of 8000000 for 9000
+ 26946 strings out of 476179
+ 541331 string characters out of 5809544
+ 981334 words of memory out of 5000000
+ 47251 multiletter control sequences out of 15000+600000
+ 476857 words of font info for 98 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 86i,13n,121p,1494b,916s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 86i,15n,121p,1494b,916s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on APA_Book.pdf (89 pages).
+Output written on APA_Book.pdf (109 pages).

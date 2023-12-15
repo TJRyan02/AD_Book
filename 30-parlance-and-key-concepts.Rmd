@@ -6,16 +6,16 @@ library(tidyverse)
 library(knitr)
 ```
 
-# The Parlance of Probability
+# The Parlance of Probability {#parlanceprob}
 
 Many profound scientific and intellectual advances trace their origins to advances in _notation_. It makes sense: as we develop ways to express specific concepts clearly and succinctly, our understanding of their interrelationships expands, as does our ability to combine these concepts in interesting---sometimes generative---ways. Consider a non-mathematical example. Figure \@ref(fig:music) shows two possible representations of the first two measures of the jazz standard, "What a Difference a Day Made" by Maria Grever.^[Grever, a Mexican composer, wrote the original melody. The tune was adapted to English by Stanley Adams.] Figure \@ref(fig:music)(a) shows how the tune might be represented in the absence of a formal system. The presentation conveys the gist, but is widely open to interpretation: no two musicians would play it the same way. Figure \@ref(fig:music)(b) represents the tune within the standard system for musical notation. Here, the notes and their durations are conveyed with precision, such that any trained musician could reproduce it almost exactly. Additionally, the standardization gives the musician the tools she would need to embellish her performance with outside knowledge. For instance, she could apply her hours of practice improvising over an F-minor seventh chord (represented in the second measure) to ornament the basic melody.
 
 ``` {r music, echo = F, out.width="80%", fig.cap = "Two representations of a jazz standard."}
 knitr::include_graphics("images/wddm_comb.png")
 ```
-The study of statistical uncertainty rests on what scholars have discovered about probability---a focus area that has a substantial ecosystem of notation. The notation developed to deal with a recurrent problem: that while it is easy to describe _specific events_ (we rolled a die, and it landed on the number 3), sound thinking about inference requires describing things at a higher level of generality (for any six-sided die, the probability of rolling each number is one out of six). This chapter presents an overview of the most foundational concepts and notational practices. [XX less example-driven?]
+The study of statistical uncertainty rests on what scholars have discovered about probability---a focus area that has a substantial ecosystem of notation. The notation developed to deal with a recurrent problem: that while it is easy to describe _specific events_ (we rolled a die, and it landed on the number 3), sound thinking about inference requires describing things at a higher level of generality (for any six-sided die, the probability of rolling each number is one out of six). This chapter presents an overview of the most foundational concepts and notational practices.
 
-## Probability Axioms
+## Probability Axioms {#probaxiom}
 
 The study of probability begins with what are called _axioms_. What is an axiom? We think of it as a statement that a person should accept as true, in service of facilitating a further discussion. The following statements might be considered axioms:
 
