@@ -1,0 +1,60 @@
+\contentsline {chapter}{Preamble}{5}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Introduction: Using Data to Learn About Politics}{7}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Why can't I just use a spreadsheet?: Promises and Challenges of the R Statistical Environment}{9}{chapter.2}%
+\contentsline {section}{\numberline {2.1}How does R store data? An Introduction to Vectors}{10}{section.2.1}%
+\contentsline {chapter}{\numberline {3}Sampling}{11}{chapter.3}%
+\contentsline {chapter}{The Friendly Flexible Linear Model}{13}{chapter*.3}%
+\contentsline {chapter}{\numberline {4}Dummy variables in regression}{17}{chapter.4}%
+\contentsline {section}{\numberline {4.1}The generational divide in 2020}{17}{section.4.1}%
+\contentsline {section}{\numberline {4.2}A regression with one dummy}{20}{section.4.2}%
+\contentsline {section}{\numberline {4.3}A regression with multiple dummies}{22}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Reference categories}{24}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Dummy variables with unordered categories}{27}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Dummy variables and regression flexibility}{27}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Activities}{29}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Polynomial Functional Forms}{31}{chapter.5}%
+\contentsline {section}{\numberline {5.1}The Quadratic Functional Form}{34}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Interpreting Coefficients in a Quadratic model}{37}{section.5.2}%
+\contentsline {section}{\numberline {5.3}When to use a Quadratic Model}{39}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Higher-order Polynomial Models}{40}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Activities}{42}{section.5.5}%
+\contentsline {chapter}{\numberline {6}Logarithmic Models}{43}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Refresher on logarithms}{45}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Property 1: Log transformations can tame unwieldy properties of a distribution.}{47}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Property 2: Log transformations approximate percentage change}{48}{section.6.3}%
+\contentsline {section}{\numberline {6.4}A different look at GDP and Polity}{49}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Activities}{50}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Interaction terms}{53}{chapter.7}%
+\contentsline {section}{\numberline {7.1}What is an interaction term?}{56}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Interpreting results of an interactive model}{57}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Predicted values in interactive models}{60}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Activities}{62}{section.7.4}%
+\contentsline {chapter}{\numberline {8}Characterizing Uncertainty (or: Now for the Numbers in Parentheses)}{65}{chapter.8}%
+\contentsline {chapter}{\numberline {9}The Parlance of Probability}{67}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Probability Axioms}{68}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Conditional Probability}{71}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Statistical independence}{73}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Activities}{75}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Appendix}{76}{section.9.5}%
+\contentsline {subsection}{\numberline {9.5.1}Derivation of Equation \textup {\hbox {\mathsurround \z@ \normalfont (\ignorespaces \ref {eq:independence2}\unskip \@@italiccorr )}}}{76}{subsection.9.5.1}%
+\contentsline {chapter}{\numberline {10}Probability by Simulation}{77}{chapter.10}%
+\contentsline {section}{\numberline {10.1}A simple example}{78}{section.10.1}%
+\contentsline {section}{\numberline {10.2}How many simulations to run?}{82}{section.10.2}%
+\contentsline {section}{\numberline {10.3}Simulations and reproducability}{83}{section.10.3}%
+\contentsline {section}{\numberline {10.4}Activities}{85}{section.10.4}%
+\contentsline {chapter}{\numberline {11}Random variables and distributions}{89}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Notation for random variables}{89}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Distribution functions}{90}{section.11.2}%
+\contentsline {section}{\numberline {11.3}The Bernoulli Distribution}{91}{section.11.3}%
+\contentsline {section}{\numberline {11.4}The Binomial Distribution}{93}{section.11.4}%
+\contentsline {section}{\numberline {11.5}The Normal Distribution}{97}{section.11.5}%
+\contentsline {section}{\numberline {11.6}Normal's close cousin: the \(t\)-Distribution}{102}{section.11.6}%
+\contentsline {section}{\numberline {11.7}Summing up}{103}{section.11.7}%
+\contentsline {section}{\numberline {11.8}Activities}{104}{section.11.8}%
+\contentsline {chapter}{\numberline {12}The numbers in parentheses}{109}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Sampling distributions}{109}{section.12.1}%
+\contentsline {section}{\numberline {12.2}What is a standard error?}{111}{section.12.2}%
+\contentsline {section}{\numberline {12.3}Calculating standard errors}{113}{section.12.3}%
+\contentsline {section}{\numberline {12.4}Calculating standard errors in R}{114}{section.12.4}%
+\contentsline {section}{\numberline {12.5}Uncertainty versus \emph {statistical} uncertainty}{115}{section.12.5}%
+\contentsline {section}{\numberline {12.6}Activities}{115}{section.12.6}%

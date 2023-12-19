@@ -9,7 +9,7 @@ library(directlabels)
 library(ggpubr)
 ```
 
-# Random variables and distributions
+# Random variables and distributions {#distributions}
 
 In chapter \@ref(simandprob), we used a simulation to have R create a probability distribution associated with a probabilistic event. While simulations can be illuminating, we cannot rely on them exclusively. For one thing, as we saw, they inherently lack precision, generating an approximate result even though an exact result might be available. Additionally, conducting a simulation would often involve writing a whole new algorithm tailored to a particular analytical situation, even though all the important aspects of the situation are extremely common and well-understood---something of a waste of time. This chapter goes into further detail about probability distributions---the mathematical tools that are used to describe them, as well as several distributions that, because they arise in a wide array of analytical situations, are especially important to learn.
 

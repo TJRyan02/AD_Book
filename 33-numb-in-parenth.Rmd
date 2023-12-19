@@ -1,0 +1,276 @@
+```{r, echo = FALSE}
+rm(list = ls())
+
+library(huxtable)
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(directlabels)
+library(ggpubr)
+
+options(scipen = 999)
+```
+
+# The numbers in parentheses {#numbparenth}
+
+Many statistical results---regression coefficients, but also means, proportions, and other things as well---travel with numbers in parentheses. Like a trusty sidekick, these numbers pop up here and there. They always seem to have some purpose, and yet it is also clear that theirs is not the starring role. To date, we have put these numbers in the background, discussing them only vaguely as some sort of measure of precision. There were principled reasons for this ordering---see section \@ref(uncerstatuncert) below. But, today is finally their day. This chapter finally discusses in detail what the numbers in parentheses mean, where they come from, and why, like Robin to Batman, Watson to Holmes, and Donkey to Shrek, they too have something special to offer---and sometimes even save the day.
+
+## Sampling distributions
+
+But we'll get to all that in just a second. Before we tell you about the numbers in parentheses, we need one more concept and definition. A _sampling distribution_ is the probability distribution of a statistic. You've seen them before! In the previous chapter (Figure \@ref(fig:normals)), we simulated calculating the average favorability toward a ballot referendum among 11 randomly chosen citizens. We ran the simulation 10,000 times and created a plot of the resulting statistics (the means). That plot was a sampling distribution. The other two plots in Figure \@ref(fig:normals) were sampling distributions for different statistics.
+
+What is new in the current chapter to broaden the concept. Simulations powerfully convey the idea of a sampling distribution because we so transparently can calculate the same statistic over and over again, and then scrutinize how much the statistic moves around based on chance alone. The new and somewhat counterintuitive twist here is that statisticians routinely apply the concept of a sampling distribution even when it is _not_ possible to recalculate statistics over and over again.
+
+For instance, suppose we were interested understanding US states' approaches to compensating state legislators: we want to know the average legislator compensation, averaging across states. The `ncsl-compenation` dataset includes exactly this information, for 2023.^[Compensation information was scraped from a table compiled by the National Conference of State Legislatures, available at https://www.ncsl.org/about-state-legislatures/2023-legislator-compensation. Where compensation was reported on a daily or weekly basis, the authors roughly estimated total compensation based on information about state legislative calendars, available at https://www.ncsl.org/about-state-legislatures/2023-state-legislative-session-calendar. As such, the values in this dataset should be regarded as approximate.] Let's take a look.
+
+``` {r, message = F}
+df <- read_csv(file = "datasets/ncsl-compensation.csv")
+mean(df$compensation) # mean compensation
+```
+
+The mean is `r round(mean(df$compensation), 2)`. (If this mean seems surprisingly low, bear in mind that, in most states, being a legislator is a part-time job: the legislature is in session for just a few weeks every year. In some states, being a legislator is considered a sort of public service. New Hampshire pays its legislators only $100, and New Mexico does not pay them at all.)
+
+In this case, it feels a bit strange to call the fifty states our "sample." After all, they aren't really a _sample_ of anything. They are the full population. We got all fifty. There weren't any left out.
+
+Why is this move---invoking the idea of a sampling distribution, even when we are not literally sampling anything---permissible? In short, it is permissible because it works: it provides useful guidance for thinking about how much certainty we can attach to the statistic we estimated. If the practice is counterintuitive, it might help to imagine a _hypothetical_ larger population from which our particular observations have been drawn. For a sci-fi twist, you can imagine that the fifty states about which we have data have been sampled from the larger population of states that would exist in alternative dimensions or repeats of all of human history.^[We don't mean to deny that the philosophical issues here are a little tricky. The awkwardness we are alluding to here is one of the main motivations for an entire, stylistically different branch of statistics known as Bayesian statistics. Bayesian statistics is worth learning, but it beyond our current scope.]
+
+> **Upshot**: A sampling distribution is the probability distribution for a statistic---the values that it would be expected to take, on repeated samples. However, statisticians routinely contemplate sampling distributions even when repeated sampling is impossible.
+
+## What is a standard error? {#stderror}
+
+At long last, we are ready for the definition of a standard error. A *standard error* is the standard deviation of a statistic's sampling distribution. Because a standard deviation is a measure of variability---how much do values within a set of numbers move around?---you can think of a standard error as a number that conveys how much a statistic we calculated---a mean, a proportion, or something else---might be expected to move around, if we could analyze a set of fresh (perhaps hypothetical) data. We're going to use standard errors for the following type of thought experiment: having calculated the mean legislator compensation in the states to be `r mean(df$compensation)`, with fresh data, we would find the mean to be \$30,000? How about \$55,000? How about \$150,000? Clearly some of these figures are more plausible than others. But standard errors will help us systematically characterize how _much_ more plausible.
+
+So a standard error is just a special standard deviation---the standard deviation of the sampling distribution. How do we go about calculating it? You might think that doing so is trivial. After all, we already know a command to calculate a standard deviation in `R`. Would it not simply be `sd(df$compensation)`, which generates the results `r round(sd(df$compensation),3)`? No, it would not be. That command correctly calculates the standard deviation of the _values in our dataset_, but that is not what a standard error is. Again, a standard error is the standard deviation of the sampling distribution of the _statistic itself_ (here, the mean) and it speaks to how that _statistic_ would vary in repeated samples---not to the variability of the data points in our particualr dataset. We could use the `sd()` command to estimate a standard error if we had used a simulation to generate a sampling distribution, as we did in Section \@ref(warsim). Here, we created a dataset of statistics. But that is not our current context. The data we have are the data we have---period. What are we to do?
+
+We are going to take advantage of the fact that, although our one-off dataset does not allow us to directly observe the standard error (as a simulated dataset would), it does contain some _hints_ about the standard error. For our current statistic---the mean---the biggest hint comes from the variability of the data points that were used to calculate the mean. Again, the standard deviation of these data points is not the standard error. But it is _related_ to the standard error. Consider the following intuition: if the states differed very little in their legislator compensation---if they were all within \$1,000 of our `r mean(df$compensation)` estimate, say---then we would naturally expect the mean calculated on hypothetical fresh data to be very similar to our estimated mean. On the other hand, if the states varied drastically in their compensation---if they were all tens of thousands of dollars apart from each other---then the mean calculated on hypothetical fresh data might be very different from the current value. Figure \@ref(fig:comphists) illustrates these two alternatives. If legislator compensation were distributed as in the left panel, we would expect the mean (represented by a vertical reference line) to move little from sample to sample. If compensation were distributed more like in the right panel, we would expect the mean to vary more from sample to sample.
+
+``` {r comphists, echo = F, warning = F, message = F, fig.cap = "Hypothetical variation in legislator compensation. Vertical reference line represents the mean of the distribution."}
+set.seed(8675309)
+
+comp_sim <- data.frame(
+  x1 = runif(50, mean(df$compensation)-6000, mean(df$compensation)+6000))
+
+sample_value <- function() {
+  if(runif(1) < 0.4) {
+    0
+  } else {
+    rnorm(1, mean = 70000, sd = 20000)
+  }
+}
+
+comp_sim$x2 <- replicate(50, sample_value())
+
+p1 <- ggplot(comp_sim, aes(x=x1)) + 
+  geom_histogram(boundary = 0, closed = "left") +
+  scale_x_continuous(limits = c(0, 120000), breaks = seq(from = 0, to = 120000, by = 30000)) + 
+  scale_y_continuous(limits = c(0, 25)) + 
+  ggtitle("Mean won't vary as much") +
+  xlab("Compensation") +
+  geom_vline(xintercept = mean(comp_sim$x1)) +
+  theme_bw()
+
+p2 <- ggplot(comp_sim, aes(x=x2)) + 
+  geom_histogram(boundary = 0, closed = "left") +
+  scale_x_continuous(limits = c(0, 120000), breaks = seq(from = 0, to = 120000, by = 30000)) +
+  scale_y_continuous(limits = c(0, 25)) + 
+  ggtitle("Mean will vary more") +
+  xlab("Compensation") +
+  geom_vline(xintercept = mean(comp_sim$x2)) +
+  theme_bw()
+
+p <- ggarrange(p1, p2, nrow = 1)
+p
+```
+
+In fact, it can be shown that a good estimate for the standard error of a mean is:
+
+```{=tex}
+\begin{align}
+\frac{S}{\sqrt{n}},
+(\#eq:meanstder)
+\end{align}
+```
+
+where $S$ is the standard deviation of the data points in our sample, and $\sqrt{n}$ is the sample size. For our data, we can run:
+
+``` {r}
+sd(df$compensation) / sqrt(nrow(df))
+```
+
+which generates the result `r round(sd(df$compensation) / sqrt(nrow(df)),3)`. There it is: your first manually calculated standard error.
+
+Where does expression \@ref(eq:meanstder) come from? It is derived from first principles, by applying well-understood rules about variance to probability distribution functions, such as those covered in \@ref(distributions). Such derivations are beyond our scope---they require too big a detour into formal rules about variance and expected value functions. But they are not _much_ beyond our scope: learning how these derivations work is illuminating and would be a natural next step for students seeking to go beyond _Active Political Analysis_. For one resource, we recommend Imai [-@imai2018].
+
+>**Upshot**: A standard error is the standard deviation that describes how a statistic would be expected to vary in repeated samples. Although such samples might be fundamentally unobservable, there are approaches to estimate standard errors from the data we have.
+
+## Calculating standard errors
+
+When it comes to standard errors, each statistic is a special snowflake: each has a distinct sampling distribution, and therefor a distinct standard error. Some of the most common and useful standard error expressions are as follows:
+
+```{=tex}
+\begin{align}
+\mathrm{Standard\ error\ of\ a\ mean} = \frac{S}{\sqrt{n}}
+(\#eq:meanstder) 
+\end{align}
+```
+
+where $S$ is the sample standard deviation, as discussed in the previous section.
+
+```{=tex}
+\begin{align}
+\mathrm{Standard\ error\ of\ a\ proportion} = \sqrt{\frac{p(1-p)}{n}},
+(\#eq:propstder) 
+\end{align}
+```
+
+where $p$ is the proportion of observations that have some attribute. For instance, if we sampled 100 people and 28% of them wore glasses, the standard error for this proportion would be $\sqrt{\frac{.28(1-.28)}{100}}\approx.045$. 
+
+An especially useful standard error is the one used for the _difference_ in two means arising from different samples. It is:
+
+```{=tex}
+\begin{align}
+\mathrm{Standard\ error\ of\ a\ difference\ in\ means} = \sqrt{\frac{S^2_{x}}{n}+\frac{S^2_{y}}{m}},
+(\#eq:difmeanstder) 
+\end{align}
+```
+
+where $S_{x}$ refers to the standard deviation of values in the first sample, $n$ refers to the number of observations in the first sample, $S_{y}$ refers to the standard deviation of values in the second sample, and $m$ refers to the numbers of observations in the second sample. This standard error is especially useful because it plays a crucial role in thinking about comparisons, such as whether average legislator compensation is higher this year (sample $x$) compared to last year (sample $y$). Its usefulness becomes even more apparent when you realize that we can define the "samples" any way want. For instance, in the state legislator compensation dataset, we could add a column noting which states are east ($x$ sample) and west ($x$ sample) of the Mississippi River, and compare their compensation means. Equation \@ref(eq:difmeanstder) is also the canonical approach for  calculating treatment effects in the context of randomized experiments. 🥳
+
+The standard error for a regression coefficient in a *univariate* regression model is:
+
+```{=tex}
+\begin{align}
+\mathrm{Standard\ error\ of\ a\ regression\ coefficient} = \sqrt{\frac{\frac{1}{n}\sum_{i=1}^{n}\epsilon_{i}^2   }{\sum_{i=1}^{n}(X_{i}-\overline{X})^2}},
+(\#eq:Bstder) 
+\end{align}
+```
+
+where $n$ is the sample size, $\epsilon_{i}$ is unit $i$'s residual, $X_{i}$ is unit $i$'s value in the $X$ variable, and $\overline{X}$ is the mean of $X$. This expression is easier to digest if you recognize some of its component parts. The numerator $\frac{1}{n}\sum_{i=1}^{n}\epsilon_{i}^2$ is the average of squared residuals. The denominator $\sum_{i=1}^{n}(X_{i}-\overline{X})^2$ represents the total variation in $X$ about its mean.
+
+Beyond these, the expressions for standard errors can become quite complex and, in practice, will always be calculated using software. But these four, at least, are worth seeing.
+
+Although the derivations of the formulas above are beyond our scope, we need to pause to make a remark about them. In general, they rely on certain _assumptions_ about properties of the underlying data. Most famously, the standard error for a regression coefficient relies on the assumption of *homoscedasticity* which, intuitively speaking, is the idea that variation in the residuals ($\epsilon_i$) is unrelated to the $X$ variable. If this assumption is not met, a formula like \@ref(eq:Bstder) is not validly derived and standard errors calculated from it can be utterly wrong. There are sometimes remedies for problems like this---other estimation approaches that rely on weaker assumptions. But of course the researcher needs to be attentive to the situations that will call for them. We will discuss these matters in more detail in a future section. First, we'll get used to thinking about the expressions above, which are the most common.
+
+>**Upshot**: Formulas for standard errors are derived from first principles, and commonly hinge on assumptions.
+
+## Calculating standard errors in R
+
+You might assume that `R` contains a nice array of built-in functions for calculating standard errors. This is not always the case. There is no built-in `R` function for calculating the standard error of a proportion---you simply have to do it manually, using expression \@ref(eq:propstder). There is also no built-in function for calculating the standard error of a mean, though there is a trick. The trick is to realize that `R` _does_ calculate standard errors for regression coefficients when estimating a linear model, and furthermore that if you estimate a regression model with no predictor variables---just an intercept term---the coefficient associated with the intercept term _is_ the mean. Thus, for the legislator compensation data, we can confirm the standard error calculated manually in Section \@ref(stderror) as follows:
+
+``` {r}
+fit <- lm(df$compensation ~ 1, data = df)
+summary(fit)
+```
+
+The standard error for the intercept term is the standard error of the mean.
+
+>**Upshot**: Calculating standard errors in `R` takes a little know-how.
+
+## Uncertainty versus _statistical_ uncertainty {#uncerstatuncert}
+
+Placeholder.
+
+## Wrapping up
+
+Hopefully you now have a better sense of what the omnipresent statistical sidekick---the standard error---conveys: the extent to which the statistic it is accompanying would be expected to vary in repeated samples. As we will soon see, this information in turn is a key component of two results that are routinely reported in statistical analyses: confidence intervals and hypothesis tests. We begin to take up these tools in the following chapter.
+
+## Activities
+
+1. As you likely recall, in 2022, the United States Supreme Court issued a ruling (_Dobbs v. Jackson Women's Health Organization_) that drastically reduced protections for abortion rights in the United States. Imagine we are living shortly before this decision was issued and want to predict the public's response to such a decision. Suppose that the information in Table \@ref(tab:aborttable) represents the _true_ distribution of answers to the question, "Would you be pleased, upset, or neither pleased nor upset if the Supreme Court reduced abortion rights?" in the United States population. (In fact, these figures come from a reliable public opinion survey.)
+
+``` {r aborttable, echo = F, message = F}
+anes <- read_csv(file = "datasets/2020anes.csv")
+
+abortion <- anes %>%
+  filter(!is.na(abortion)) %>%
+  group_by(abortion) %>%
+  summarize(count = n()) %>%
+  mutate(proportion = round(count / sum(count), 2)) %>%
+  select(-count)
+
+abortion <- abortion %>% rename(opinion = abortion)
+
+abortion$opinion <- factor(
+  abortion$opinion,
+  levels = 1:7,
+  labels = c("1 Extremely pleased", "2 Moderately pleased", "3 A little pleased", "4 Neither pleased nor upset", "5 A little upset", "6 Moderately upset", "7 Extremely upset")
+)
+
+aborttable <- huxtable(abortion)
+aborttable <- set_caption(aborttable, "Would you be pleased or upset if the Supreme Court reduced abortion rights?")
+aborttable
+```
+
+a. Calculate the true mean opinion on this question in the population as a whole, assigning values to the different responses as shown in the table.
+
+b. Write a loop that simulates conducting 1,000 public opinion surveys on a population like the one described in Table \@ref(tab:aborttable). For each imaginary survey, calculate the average public opinion _in your simulated data_. Imagine each survey consists of 100 randomly sampled people. Report the median of these 1,000 means, and compare it to your answer in (a).
+
+c. Calculate the standard error of the sampling distribution you created, using the `sd()` function.
+
+d. Using only the last survey you simulated, calculate the standard error of the sampling distribution, using an appropriate formula from this chapter. How does this result compare to your answer in (c)?
+
+``` {r abortgendertable, echo = F, message = F}
+abortiongen <- anes %>%
+  filter(!is.na(abortion)) %>%
+  filter(!is.na(female)) %>%
+  group_by(abortion, female) %>%
+  summarize(count = n()) %>%
+  pivot_wider(
+  names_from = female, 
+  values_from = count, 
+  names_prefix = "count_")
+
+abortiongen$op_female <- round(prop.table(abortiongen$count_female),2)
+
+abortiongen$op_notfemale <- round(prop.table(abortiongen$count_not_female),2)
+
+abortiongen <- abortiongen %>%
+  select(-c(count_female, count_not_female))
+
+abortiongen <- abortiongen %>%
+  rename(opinion = abortion)
+
+abortiongen$opinion <- factor(
+  abortiongen$opinion,
+  levels = 1:7,
+  labels = c("1 Extremely pleased", "2 Moderately pleased", "3 A little pleased", "4 Neither pleased nor upset", "5 A little upset", "6 Moderately upset", "7 Extremely upset")
+)
+
+aborttable <- huxtable(abortiongen)
+aborttable <- set_caption(aborttable, "Would you be pleased or upset if the Supreme Court reduced abortion rights?")
+aborttable
+```
+
+2. Table \@ref(tab:abortgendertable) reports how respondents in the 2020 American National Election Study answered the question described in (1). The results are broken down by the respondents' answer to the question, "What is your sex?" 4,450 respondents answered this question by saying they were female, and 3,763 indicated they were not female.
+
+a. Calculate the mean response in each group, as well as the difference in means.
+
+b. Calculate the standard errors for each of the three statistics you calculated in (a).
+
+c. Based on what you calculated in (a) and (b), how plausible does it seem to you that, in the population as a whole, the average response to the abortion question is the same, irrespective of whether the respondent is female or not? (For now, just provide your intuition and the reasoning behind it. In future sections, we will learn how to evaluate this idea formally.)
+
+``` {r, echo = F, eval = F}
+femalemean <- .12*1+.06*2+.02*3+.26*4+.04*5+.14*6+.36*7
+notfemalemean <- .14*1+.07*2+.03*3+.33*4+.04*5+.14*6+.25*7
+
+difmean <- femalemean - notfemalemean
+
+femalese <- sd(anes$abortion[anes$female=="female"], na.rm = T) / sqrt(sum(!is.na(anes$abortion[anes$female=="female"])))
+
+notfemalese <- sd(anes$abortion[anes$female=="not_female"], na.rm = T) / sqrt(sum(!is.na(anes$abortion[anes$female=="not_female"])))
+
+difmeanse <- sqrt(sd(anes$abortion[anes$female=="female"], na.rm = T)^2 / sum(!is.na(anes$abortion[anes$female=="female"])) +
+  sd(anes$abortion[anes$female=="not_female"], na.rm = T)^2 / sum(!is.na(anes$abortion[anes$female=="not_female"])))
+```
+
+d. Estimate a regression model as follows:
+
+``` {r, eval = F}
+anes <- read_csv(file = "datasets/2020anes.csv")
+
+fit <- lm(abortion ~ as.factor(female), data = anes)
+
+summary(fit)
+```
+
+Interpret the results it generates, in particular the two coefficients _and_ their standard errors. How closely did you replicate the standard errors you calculated in (b)? 
