@@ -200,7 +200,7 @@ p
 
 Before turning to the substantive results, take a moment to contemplate how the two plots relate to each other. The PMF plot shows the probability of each seat share by the Nasty Party. Some outcomes (such as the Nasty Party winning 0 or 1 seats despite having a 60% chance to win each individual seat) are vanishingly unlikely: the Nasty Party would have to be _very_ unlucky for this to be the outcome. Others, such as winning 5 or 6 seats, are quite likely. The CDF plot steps up in increments, starting at 0, taking smaller steps where the PMF has a short column, and larger steps where it has a tall column. Of course, by the time it reaches 9 (the size of the legislature), it reaches 1.0: we have now accounted for all possible outcomes (Axiom 2 in Section \@ref(probaxiom)).
 
-## The Normal Distribution
+## The Normal Distribution {#normdistsection}
 
 The third distribution we'll consider is arguably the most important, because it is ubiquitous in all manner of data analytical contexts. It is the world-famous Normal Distribution.
 
@@ -336,7 +336,7 @@ The right panel of Figure \@ref(fig:musigma) visually represents the CDFs for th
 
 R includes probability functions for the Normal Distribution that are analogous to those we saw for the Binomial Distribution. The `dnorm` function takes arguments `x`, `mean`, and `sd`, where `x` is the value for which you wish to know the density of the Normal distribution, `mean` specifies the mean of the distribution, and `sd` specifies its standard deviation. For instance, running `dnorm(x = 3, mean = 3, sd = .5)` returns `r round(dnorm(x = 3, mean = 3, sd = .5), 3)`---a numerical confirmation of what can be seen by looking at the peak of the green curve in the left panel of Figure \@ref(fig:musigma). The `pnorm()` function is analogous to `pbinom()`. It takes arguments `q` (confusingly, the $x$ value for which you desire the cumulative probability), `mean` (the mean of the distribution), and `sd` (the standard deviation).
 
-## Normal's close cousin: the $t$-Distribution
+## Normal's close cousin: the $t$-Distribution {#tdistribution}
 
 Although the Normal Distribution plays an indispensable role in statistical analysis, it has one well-known drawback: when applied to small samples (often regarded to be fewer than about 30 data points), it tends to place too little probability on outcomes far from the center of the distribution. In the jargon of statistics, its "tails" (the parts of the curve that get very close to the $x$-axis) are too skinny. To better capture the possibility of an extreme outcome, they should slope toward the $x$-axis more gradually.^[The exact reasons for this deficiency are beyond are scope, but they have to do with the inherent unreliability involved in estimating means and variances in small samples.]
 

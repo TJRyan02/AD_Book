@@ -1,0 +1,289 @@
+```{r, echo = FALSE}
+rm(list = ls())
+
+library(huxtable)
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(directlabels)
+library(ggpubr)
+library(kableExtra)
+library(dplyr)
+
+options(scipen = 999)
+```
+
+# Putting Standard Errors to Use {#seuse}
+
+We allocated an entire chapter to standard errors for two reasons: first because they are interpretable and useful in their own right, and second because they are a crucial ingredient to two other results that data analysts routinely report: confidence intervals and hypothesis tests. This chapter picks up where the previous one left off: by transitioning from a focus on the standard errors themselves to the ways they can be put to use.
+
+## Constructing a confidence interval with the Standard Normal distribution
+
+Suppose you were interested in the average positivity or negativity toward a ballot initiative that would decriminalize marijuana in your state. You conduct a survey of 1,000 people and include a question that places each respondent's orientation toward the initiative on a scale that ranges from -3 (strongly oppose the initiative) to 3 (strongly favor the initiative), with 0 representing a neutrality point. You go to analyze your results and---lo and behold!---positivity on the part of some respondents exactly offsets negativity on the part of others, and the overall mean response is 0.0. (This would be a highly unusual outcome, but bear with us for the sake of illustration.) Not only that, you examine the standard error of the mean, and it is exactly 1.0.
+
+Of course this result does not mean that the true mean in the full population is exactly 0.0. We examined a random _sample_, and we'd naturally expect the mean in our sample to depart from the population mean to some extent, due simply to the vagaries of random sampling. Our sample very well might slightly overrepresent initiative proponents or opponents, due to idiosyncrasies of who happened to respond to the survey.
+
+So what range of values are plausible for the true population mean? Answering this question is simplified by the fact that the sample mean happened to be 0.0 and the standard error for this mean was 1.0. Sound familiar? These results are such that the sampling properties of our statistic (the mean) are nicely described by the Standard Normal Distribution, which you met in Section \@ref(normdistsection). Given this mean and standard error, we'd expect the statistic to vary (in hypothetical repeated samples) in a way that would be well-described by the Standard Normal.
+
+And we can put this fact to use. Suppose we wanted to know what range of values would contain the true population mean with a probability of 0.75.^[This phrasing is a slight coercion of terminology, for reasons we discuss at the end of this subsection.] We could examine the Standard Normal distribution and ask ourselves: how far away from 0 do we have to go, to encompass 75% of the sampling probability? 
+
+Figure \@ref(fig:conf75) illustrates what we desire to know: for the standard normal, what value on the $x$ axis would include 75% of the area under the curve, and exclude 25% of it? Notice that excluding 25% of the area in a symmetrical way requires dividing 0.25 by 2, and then excluding 12.5% of area from the lower tail of the curve, and 12.5% of area from the upper tail of the curve. As Figure \@ref(fig:conf75) illustrates, constructing the interval we seek requires identifying the values of $x$ (one positive and one negative) that will accomplish that goal.
+
+``` {r conf75, echo = F, message = F, warning = F, fig.cap = "Visualization of 75% confidence interval for the Standard Normal Distribution."}
+x_values <- seq(-4, 4, by = 0.01)
+
+df <- data.frame(x = x_values, y = dnorm(x_values))
+
+p <- ggplot(df, aes(x = x, y = y)) +
+  geom_line() +  # Draw the curve
+  geom_area(data = subset(df, x <= -1.15), fill = "blue", alpha = 0.5) +
+  geom_area(data = subset(df, x >= 1.15), fill = "blue", alpha = 0.5) +
+  labs(title = "Hypothetical Sampling Distribution", x = "X", y = "Density") +
+  theme_minimal() +
+  annotate("text", x = 3.5, y = 0.275, label = "12.5% of area", hjust = 1, vjust = 1, size = 4) +
+  annotate("curve", x = 2.75, y = 0.26, xend = 1.8, yend = 0.05, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) +
+  
+    annotate("text", x = -3.5, y = 0.275, label = "12.5% of area", hjust = 0, vjust = 1, size = 4) +
+  annotate("curve", x = -2.75, y = 0.26, xend = -1.8, yend = 0.05, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) +
+  
+  annotate("text", x = 2.25, y = 0.35, label = "75% of area", hjust = .5, vjust = 1, size = 4) +
+  annotate("curve", x = 2.25, y = 0.335, xend = .5, yend = 0.225, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) +
+  
+  annotate("text", x = -2, y = 0.35, label = "What x is this?!", hjust = .5, vjust = 1, size = 4) +
+  annotate("curve", x = -2, y = 0.33, xend = -1.15, yend = 0.0, curvature = 0, arrow = arrow(length = unit(0.1, "inches")))
+
+p
+```
+
+The `R` distribution functions that we covered in Chapter \@ref(distributions) can answer this question. The CDF function, `pnorm()`, could get the job done, though it would involve some trial-and-error: we'd experiment with various $x$ values until we found one that excluded 12.5% of the area. For instance, `pnorm(-1.5)` would exclude `r round(pnorm(-1.5),3)` of area from the lower tail, which is too little. `pnorm(-.8)` excludes `r round(pnorm(-.8),3)` from the lower tail, which is too much. So the desired value must be between -1.5 and -.8. The more direct approach is to use the inverse CDF function, which, given the desired proportion we wish to exclude, provides the desired number directly:
+
+``` {r}
+qnorm(.125, mean = 0, sd = 1) # For the standard normal, what value of x do we need for the P(X≤x to be 12.5%)?
+qnorm(1 - .125, mean = 0, sd = 1) # For the standard normal, what value of x do we need for the P(X≥x to be 87.5%)?
+```
+
+The results imply that the desired $x$ values are `r round(qnorm(.125, mean = 0, sd = 1), 3)` and `r round(qnorm(.875, mean = 0, sd = 1), 3)`. That is, the 75% confidence interval for the mean in our hypothetical survey is [`r round(qnorm(.125, mean = 0, sd = 1), 3)`, `r round(qnorm(.875, mean = 0, sd = 1), 3)`].
+
+For a thought experiment, and to check that you're following along correctly, ask yourself: suppose we wanted to encompass 80% of probability. Would these $x$ values become more or less extreme (distant from 0)?
+
+Recall from [Poli281] that when you characterize a value's distance from a mean in terms of standard deviations, it is called a z-score (or a z-statistic). That is what we are doing here: the $x$-values we found are one common example of a z-score. Going forward, we will refer to differences standardized against the Normal distribution as z-scores, which is standard practice.
+
+## Interpreting a confidence interval
+
+What does the 75% confidence interval we constructed tell us, exactly? The _tempting_ interpretation goes as follows:
+
+> In the population as a whole, there is an true mean level of positivity/negativity toward the marijuana ballot initiative. Call it the "parameter of interest," and designate it with the Greek letter $\mu$. We don't know what it is, since we cannot survey the whole population. But we do know that, in our survey of 1,000 people, the 75% confidence interval was [`r round(qnorm(.125, mean = 0, sd = 1), 3)`, `r round(qnorm(.875, mean = 0, sd = 1), 3)`]. From this, we can conclude that the probability that $\mu$ is within the range [`r round(qnorm(.125, mean = 0, sd = 1), 3)`, `r round(qnorm(.875, mean = 0, sd = 1), 3)`] is 0.75.
+
+This interpretation is _close_ to correct. Truth be told, it is how many people---including well-trained researchers---interpret confidence intervals, and interpreting them that way usually will not lead you far astray. And yet, the interpretation is not _entirely_ correct, and it will enrich your understanding of statistical uncertainty to perceive where it goes wrong.
+
+The interpretation goes wrong in that it forgets that, whatever value $\mu$ is, it is _fixed_. For instance, suppose $\mu = 0.835$. In this case, we would simply say that the 75% confidence interval _does contain_ the true parameter $\mu$, simply because `r round(qnorm(.125, mean = 0, sd = 1), 3)` < 0.835 < `r round(qnorm(.875, mean = 0, sd = 1), 3)`. There would be no "probability" about this fact, just as there is no "probability" that 2<3. (Or if there is a probability, it is 1.) These are facts, more than probabilistic statements.
+
+So what is the correct interpretation for the confidence interval we constructed? It is more cumbersome and requires continued thinking about repeated hypothetical samples. The correct interpretation would be to say that, for any value of $\mu$, if we imagined collecting a large number of separate random samples and followed the same procedure to construct a 75% confidence interval every time, these confidence intervals would enclose $\mu$ in 75% of these samples. We acknowledge that this interpretation is less intuitive than the "tempting" interpretation above. But it is a good reminder of exactly how frequentist statistics conceptualize statistical uncertainty.
+
+## Generalizing confidence interval calculations
+
+The polling scenario above had a feature designed to simplify our confidence interval calculations: we imagined that the mean in our survey was 0.0 and the standard error for this mean was 1.0. These values allowed us to seamlessly reference the Standard Normal distribution as the appropriate sampling distribution for our context.
+
+Of course in reality, things are hardly ever so straightforward. Perhaps, for instance, the mean in our survey was 3.5 and the standard error was 1.5. In this case, we'd reference the Standard Normal and find the "critical values" of $x$ that enclose the middle 75% of the sampling distribution, just as before. But then we would rescale these values by 1) centering them at the observed mean in our data and 2) multiplying them by our observed standard error. This procedure essentially rescales the standard normal such that it would apply to _any_ mean and standard error. Here is how these steps might be accomplished in R:
+
+``` {r}
+alpha <- 0.25
+mean <- 3.5
+SE <- 1.5
+
+# Find critical x value:
+
+z_critical <- -1 * qnorm(alpha / 2, mean = 0, sd = 1) # What x value excludes 12.5% of area from the lower tail? Multiplying by -1 to make this number positive.
+
+CI_lower <- mean - z_critical * SE # Scale x by the standard error, and subtract from the mean.
+CI_upper <- mean + z_critical * SE # Same as above, for the right tail
+
+print(c(CI_lower, CI_upper))
+```
+
+The 75% confidence interval for our scenario would be [`r round(CI_lower,3)`, `r round(CI_upper,3)`].
+
+Suppose we surveyed only 11 people and, as such, plan to use the $t$-distribution (with 10 degrees of freedom, see Section \@ref(tdistribution)). We can do this, too, but now we would invoke the appropriate distribution function for the $t$-distribution:
+
+``` {r}
+alpha <- 0.25
+mean <- 3.5
+SE <- 1.5
+df <- 10
+
+# Find critical t value:
+
+t_critical <- -1 * qt(alpha / 2, df = df) # What t value excludes 12.5% of area from the lower tail? Multiplying by -1 to make this number positive.
+
+CI_lower <- mean - t_critical * SE # Scale x by the standard error, and subtract from the mean.
+CI_upper <- mean + t_critical * SE # Same as above, for the right tail
+
+print(c(CI_lower, CI_upper))
+```
+
+The new confidence interval would be [`r round(CI_lower,3)`, `r round(CI_upper,3)`]. As expected, this confidence interval is slightly wider, since the $t$-distribution has thicker tails than the Normal distribution.
+
+## What confidence level should I choose? {#cichoice}
+
+So far, we've been working with a 75% confidence interval. The choice of 75% was a little unorthodox. We chose it in part to orient you to the _generalizable_ aspects of constructing a confidence interval, rather than the procedure for just one confidence level.
+
+In practice, the most common confidence interval to examine is a 95% confidence interval. The 95% confidence interval is so ingrained that many researchers have memorized the $z$-scores used to construct it: for a standard normal distribution, 95% of the area is encompassed by $z$-scores of approximately -1.96 and 1.96. Researchers also reflexively apply rules of thumb that arise from the 95% confidence interval. One such rule of thumb is that, if a statistic is twice as large as its standard error, it is just barely "statistically significant," as we'll explore in a future section.) This said, there can be good reasons to use more conservative intervals (e.g. 99%) or, perhaps less conservative ones (e.g. 90%). The best choice is a bit more context-dependent than some researchers realize, as we'll explore in more detail in a future section.
+
+## Confidence intervals for regression coefficients
+
+As you have no doubt noticed, when `R` estimates a regression model, it provides standard errors for each coefficient estimate. For instance, consider the model where we used the ANES dataset to estimate voters' feelings toward Joe Biden as a function of voter age:
+
+``` {r}
+df <- read.csv("datasets/2020anes.csv")
+fit <- lm(biden_therm ~ age, data = df)
+summary(fit)
+fit_sum <- summary(fit) # it can be convenient to retain the summary object, to access the standard errors directly.
+```
+
+The `age` variable has a standard error of `r round(fit_sum$coefficients[2,2],4)`. This number came from the formula provided in Section \@ref(selist) (equation \@ref(eq:Bstder)). The intercept term has a standard error, too---a nice reminder that it is an estimated value, just like the coefficients. Here, the intercept's standard error is `r round(fit_sum$coefficients[1,2],4)`. (The formula for calculating this standard error is quite elaborate, and beyond our scope. We will simply trust `R` for the moment.)
+
+With these results in hand, we can calculate confidence intervals for each of these two results. In Section \@ref(cichoice), we mentiond that, if we are referencing the Standard Normal Distribution, the $x$ values appropriate for constructing a 95% confidence interval are about -1.96 and 1.96, a fact that you can verify by running `qnorm(.025)` and `qnorm(.975)`. So the 95% confidence interval for the `age` estimate has a lower bound of approximately:
+
+$0.111 - 1.96 * 0.023 = 0.0659$.
+
+And an upper bound of approximately:
+
+$0.111 + 1.96 * 0.023 = 0.1561$.
+
+We would use a similar procedure to construct a 95% confidence interval around the intercept term. Not surprisingly, `R` has a built-in function that can do these procedures for us. It is the `confint()` function, which can be applied to the fitted model object we retained:
+
+``` {r}
+confint(fit)
+```
+
+These results confirm our manual estimates above. The `confint` function can also create confidence intervals narrower and wider than 95%, by using the optional `level` argument. For instance, the 99% confidence interval is provided by:
+
+``` {r}
+confint(fit, level = .99)
+```
+
+## Confidence intervals for predicted values
+
+We don't have to stop at coefficients. You can construct a confidence interval around just about any estimate derived from a regression model. One particularly useful interval interval is for predicted values. Recall that we can use our regression results to derive predicted value for various combinations of the $x$ values---either manually, or (more likely) via `R`'s built in tools. For instance, the predicted liking of Joe Biden for people aged 18 to 80 can be calculated and plotted by:
+
+``` {r}
+input_data <- data.frame(age = 0:100)
+predicted_values <- predict(fit, newdata = input_data)
+results <- data.frame(age = 0:100, predicted_biden_therm = predicted_values)
+p1 <- ggplot(results, aes(x=age, y=predicted_biden_therm)) + geom_line()
+p1
+```
+
+We can add a confidence interval to this plot in a few steps. First, we add an `interval` argument to the `predict()` function, and set it to `"confidence"`:^[Alternatively, you could specify `type = "prediction"`. This would lead `R` to calculate the "prediction" interval, rather than the confidence interval. The difference between the two concepts is as follows: a confidence interval characterizes uncertainty stemming for the _coefficient estimates_---the fact that, although the `age` estimate (for the model in this section) was `r round(fit$coefficients[2],3)`, this estimate might be too high or too low. The prediction interval accounts for uncertainty stemming from the coefficient estimates _as well as_ uncertainty stemming from the variability of individuals observations. Because prediction intervals encompass two sources of certainty rather than just one, they are always wider than confidence intervals---often drastically wider. They are not conventionally the focus in political science research, probably because the focus tends to be on the theoretical importance of the parameter estimates themselves. As such, we will not allot further attention to them. Still, the prediction interval is indeed the right object of focus if your desire is to make predictions about what value an individual observation might take (assuming the model generating your predictions is correct).]
+
+``` {r}
+predictions_with_ci <- predict(fit, newdata = input_data, interval = "confidence")
+```
+
+And, we can add these more-detailed results to the `results` dataframe, and then plot them. (Notice we needed to update the plotting command, to accommodate the column names that exist in the `results` and `predictions_with_ci` dataframes.)
+
+``` {r, eval = F, echo = T}
+results <- data.frame(age = 0:100, predictions_with_ci)
+p2 <- ggplot(results, aes(x=age, y=fit)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2)
+```
+
+``` {r bowtie, echo =  F, eval = T, fig.cap = "Regression predicted values, along with 95% confidence interval. The dot represents the centroid and the dashed reference line represents a line passing through the centroid with a slope of 0.156."}
+# Extracting the model frame
+
+#mean(df$age[!is.na(df$biden_therm)], na.rm=T) # 51.39
+
+# Playing with bow.
+results <- data.frame(age = 0:100, predictions_with_ci)
+slope <- 0.1561177
+x_point <- 51.39
+y_point <- 49.389
+
+# Calculate the intercept
+intercept <- y_point - slope * x_point
+
+p2 <- ggplot(results, aes(x=age, y=fit)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
+  geom_point(aes(x = 51.39, y = 49.38), color = "black", size = 3) +  # Reference point
+  geom_abline(slope = slope, intercept = intercept, color = "black", linetype = "dashed") +
+  xlim(0, 100) + # Set x-axis limits
+  ylim(40, 60) # Set y-axis limits
+p2
+```
+
+As you can see, the confidence interval is bow-shaped. This is always the case for classically-derived confidence intervals such as these. The interval will be narrowest at the mean value of $X$, reflecting that regression predictions are more reliable near the central tendency of the data. They widen as we move away from the mean, reflecting increasing uncertainty as we contemplate predictions farther and farther away from where our data actually reside. Another way to visualize why the confidence interval is bow-shaped is to imagine the line being pinned at the "centroid" or the data---i.e. the point identified by the mean of $x$ values and the mean of $y$ values.^[Recall from Section XX that OLS regression lines always pass through the centroid.] (This point is marked with a dot in the plot.) Then imagine rotating the line at that point until it has the slopes associated with the 95% confidence interval we calculated earlier (0.066 and 0.156). The rotated lines will converge with the edges of the confidence interval. To illustrate, Figure \@ref(fig:bowtie) shows a dashed reference line that passes through the centroid and has a slope of 0.156. 
+
+## Summary
+
+## Activities
+
+1) You are reading the newspaper one day and notice that the coverage refers to Jill Biden, the first lady of the United States, as "Mrs. Biden." This catches your attention, since Jill Biden holds an earned doctoral degree, so might have been referred to as "Dr. Biden." You begin to wonder if newspapers are more likely to apply the "Dr." honorific to men than to women. As a first step in testing this conjecture you seek to determine what proportion of articles, of those that quote women with doctoral degrees, refer to the quoted person with a standard honorific (Ms., Mrs., or Miss), and what proportion refer to her as "Dr."
+
+You collect a random sample of 125 articles that quote women with doctoral degrees. You find that 89 of them refer to the quoted person as "Dr.", and 36 refer to the quoted person with a standard honorific.
+
+a) Determine the standard error for each of these results---the proportion using and not using the Dr. honorific. To do so, make sure you refer to the formula for the standard error of a proportion in Section \@ref(selist).
+
+b) 
+
+``` {r, echo = F}
+table_data <- data.frame(
+  ` ` = c("90% CI", "95% CI", "99% CI"),  # The blank column name is represented by a space within backticks
+  standard = rep("", 3),  # Fill the column with blank spaces
+  doctor = rep("", 3)  # Fill the column with blank spaces
+)
+
+# Use kable to create the table
+kable(table_data, align = c("l", "c", "c"), col.names = c("", "Standard", "Doctor"))
+```
+
+Using the standard error your calculated, determine the 90%, 95%, and 99% confidence intervals for each proportion. Fill the bounds of these intervals (lower and upper for each one) into the table above.
+
+Note that we still have not assessed whether newspapers are treating men and women differently. We will return to that part of that aspect of this question in the next chapter.
+
+2) One big question that has come up in the study of American politics is how much "structural" factors---things that politicians exert little or no control over---influence political outcomes. The economy is one such structural factor. Presidents  influence the economy, but as a general matter most experts think that such influence is marginal. Nonetheless, voters might still apply credit or blame for economic conditions.
+
+The file `pres_econ.csv` reports U.S. presidential election results for each election from 1940 to 2008. Of particular interest for this question will be the `inc_margin` variable, which reports the incumbeny party's popular vote margin of victory, stated in percentage points. For instance, the -7.2 associated with the 2008 election means that the incumbent party (the Republicans in that election) lost the popular vote by 7.2 percentage points.
+
+The same dataset also reports, via the variables `RDI_1`, `RDI_2`, `RDI_3`, and `RDI_4`, changes in real disposable income for each year in the _preceding_ presidential term. For instance, because the 2008 election shows the value 0.4 for `RDI_1`, it means that real disposable income increased by 0.4 percent in 2005. Because the same election shows the value -0.4 for `RDI_4`, it means that real disposable income decreased by 0.4 percent in 2008.
+
+Estimate the following regression model, where the incumbent party's vote share is modeled as a function of election-year changes in disposable income, as follows:
+
+``` {r}
+df <- read.csv("datasets/pres_econ.csv")
+fit <- lm(inc_margin ~ RDI_4, data = df)
+summary(fit)
+```
+
+a) Using your regression results to manually construct a 95% confidence interval for both the intercept term and the coefficient for `RDI_4`. Do this referencing the Standard Normal Distribution.
+
+```{r, echo = F, eval = F}
+fit_sum <- summary(fit)
+
+int_lwr <- fit_sum$coefficients[1,1] - 1.96*fit_sum$coefficients[1,2]
+int_upr <- fit_sum$coefficients[1,1] + 1.96*fit_sum$coefficients[1,2]
+
+coef_lwr <- fit_sum$coefficients[2,1] - 1.96*fit_sum$coefficients[2,2]
+coef_upr <- fit_sum$coefficients[2,1] + 1.96*fit_sum$coefficients[2,2]
+```
+
+b) Repeat (a), but this time referencing the $t$-distribution with 15 degrees of freedom.
+
+``` {r, echo = F, eval = F}
+tval <- abs(qt(.025, 15))
+
+int_lwr <- fit_sum$coefficients[1,1] - tval*fit_sum$coefficients[1,2]
+int_upr <- fit_sum$coefficients[1,1] + tval*fit_sum$coefficients[1,2]
+
+coef_lwr <- fit_sum$coefficients[2,1] - tval*fit_sum$coefficients[2,2]
+coef_upr <- fit_sum$coefficients[2,1] + tval*fit_sum$coefficients[2,2]
+```
+
+c) Compare your answers for parts (a) and (b): which confidence interval is wider, any by how much? Why would this be the case?
+
+``` {r, eval = F, echo = F}
+confint(fit)
+```
+
+d) Use `R`'s `confint()` function to determine the 95% confidence intervals for your estimates. What procedure does `R` seem to use? (Does it reference the Normal Distribution or the $t$-distribution?)

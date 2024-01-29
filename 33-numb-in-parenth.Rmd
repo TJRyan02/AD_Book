@@ -103,7 +103,7 @@ Where does expression \@ref(eq:meanstder) come from? It is derived from first pr
 
 >**Upshot**: A standard error is the standard deviation that describes how a statistic would be expected to vary in repeated samples. Although such samples might be fundamentally unobservable, there are approaches to estimate standard errors from the data we have.
 
-## Calculating standard errors
+## Calculating standard errors {#selist}
 
 When it comes to standard errors, each statistic is a special snowflake: each has a distinct sampling distribution, and therefor a distinct standard error. Some of the most common and useful standard error expressions are as follows:
 
@@ -145,7 +145,7 @@ The standard error for a regression coefficient in a *univariate* regression mod
 \end{align}
 ```
 
-where $n$ is the sample size, $\epsilon_{i}$ is unit $i$'s residual, $X_{i}$ is unit $i$'s value in the $X$ variable, and $\overline{X}$ is the mean of $X$. This expression is easier to digest if you recognize some of its component parts. The numerator $\frac{1}{n}\sum_{i=1}^{n}\epsilon_{i}^2$ is the average of squared residuals. The denominator $\sum_{i=1}^{n}(X_{i}-\overline{X})^2$ represents the total variation in $X$ about its mean.
+where $n$ is the sample size, $\epsilon_{i}$ is unit $i$'s residual, $X_{i}$ is unit $i$'s value in the $X$ variable, and $\overline{X}$ is the mean of $X$. This expression is easier to digest if you recognize some of its component parts. The numerator $\frac{1}{n}\sum_{i=1}^{n}\epsilon_{i}^2$ is the average of squared residuals. The denominator $\sum_{i=1}^{n}(X_{i}-\overline{X})^2$ represents the total variation in $X$ about its mean (i.e., the Total Sum of Squares for $x$).
 
 Beyond these, the expressions for standard errors can become quite complex and, in practice, will always be calculated using software. But these four, at least, are worth seeing.
 
