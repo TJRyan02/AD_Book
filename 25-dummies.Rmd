@@ -48,7 +48,13 @@ means <- df %>%
 means
 ```
 
-Young people (`df$older==0`) like Biden `r round(means[1,2],2)` thermometer points more than Trump. Older people (`df$older==1`) like Biden `r round(means[2,2],2)` points more than Trump. Thus, we have support for the predicted generational divide: young people are more favorable toward Biden than older people, though the difference is fairly small (`r abs(round(means[1,2] - means[2,2],2))` points). (People for whom we are missing age information slightly prefer Trump to Biden.)
+``` {r echo = FALSE}
+means_ref <- df %>%
+  group_by(older) %>%
+  summarize(biden_therm = mean(biden_dif, na.rm = TRUE))
+```
+
+Young people (`df$older==0`) like Biden `r round(means_ref[1,2],2)` thermometer points more than Trump. Older people (`df$older==1`) like Biden `r round(means_ref[2,2],2)` points more than Trump. Thus, we have support for the predicted generational divide: young people are more favorable toward Biden than older people, though the difference is fairly small (`r abs(round(means_ref[1,2] - means_ref[2,2],2))` points). (People for whom we are missing age information slightly prefer Trump to Biden.)
 
 ## A regression with one dummy {#reg_one_dummy}
 
@@ -80,11 +86,11 @@ p2
 
 Figure \@ref(fig:dummy1) illustrates what happened when we estimated `model1`. Our scatter plot includes points over only two $X$ values: 0 and 1. (Our code adds a small horizontal "jitter" to better depict their density. Otherwise hundreds of data points would pile on the same spot and appear as one.) In determining where the regression line should pass through the points residing over $X=0$, it makes intuitive sense that the answer would be, "the mean of $Y$ among points for which $X=0$". And, in determining where the regression line should pass through the points residing over $X=1$, it makes intuitive sense that the answer would be, "the mean of $Y$ among points for which $X=1$." We could show that, aside from making intuitive sense, this result is formally correct, in that such a line---one that passes through $\overline Y|X=0$ and $\overline Y|X=1$ is the one and only line that will minimize the Sum of Squared Residuals.
 
-If the regression line necessarily passes through $\overline Y|X=0$ and $\overline Y|X=1$, it follows that the slope of such a line must be… the difference in means. This can be seen in Figure \@ref(fig:dummy1): the line has a slope (`r round(model1$coefficients[1], 2)`) that is identical to the difference in means we calculated in Section \@ref(gen2020). This insight leads to this section's upshot:
+If the regression line necessarily passes through $\overline Y|X=0$ and $\overline Y|X=1$, it follows that the slope of such a line must be… the difference in means. This can be seen in Figure \@ref(fig:dummy1): the line has a slope (`r round(model1$coefficients[2], 2)`) that is identical to the difference in means we calculated in Section \@ref(gen2020). This insight leads to this section's upshot:
 
 > **Upshot**: A regression with one dummy variable provides a straightforward way to estimate differences in group means via OLS regression. The intercept term will signify the mean of one group. The slope term will signify the difference in means. (And the mean of the second group can be calculated from these two numbers.)
 
-You might be thinking that this upshot is not very impressive. "I already knew how to compare means of different groups. Why did I need to learn a new way to do it?" This would be an understandable reaction. In fact, the upshot turns out to be extremely practical. First, although you already knew how to compare means between groups, the regression-based way makes it easy to conduct secondary analyses, such as examining whether the difference between group means is statistically significant (XX ref). Second, dummy variables can be used to make OLS much more flexible, as we will see next.
+You might be thinking that this upshot is not very impressive. "I already knew how to compare means of different groups. Why did I need to learn a new way to do it?" This would be an understandable reaction. In fact, the upshot turns out to be extremely practical. First, although you already knew how to compare means between groups, the regression-based way makes it easy to conduct secondary analyses, such as examining whether the difference between group means is statistically significant \@ref(hypothtesting). Second, dummy variables can be used to make OLS much more flexible, as we will see next.
 
 ## A regression with multiple dummies
 
@@ -106,7 +112,7 @@ df$age50_59[df$age >= 50 & df$age <= 59] <- 1
 df$age60plus[df$age >= 60] <- 1
 ```
 
-Of course we can familiarize with the means of `df$biden_dif` in each of these categories.
+Of course we can familiarize ourselves with the means of `df$biden_dif` in each of these categories.
 
 ``` {r, echo = TRUE, include = TRUE, eval = FALSE}
 mean(df$biden_dif[df$age18_29==1], na.rm=TRUE)
@@ -140,7 +146,7 @@ model2 <- lm(biden_dif ~ age30_39 + age40_49 + age50_59 + age60plus, data = df)
 model2
 ```
 
-Do you see how the regression results relate to the means reported in Table \@ref(tab:agemeans1)? The intercept is identical to the mean in the 18-29 category. And each coefficient represents the difference between the mean in the 18-29 category and some other category. For instance, the coefficient associated with the `age40_49` category is `r round(model2$coefficients[3],3)` because `r round(model2$coefficients[1],3)` -- `r abs(round(model2$coefficients[3], 3))` = `r round(meanstab[3,2], 2)`. That leads us to this section's upshot:
+Do you see how the regression results relate to the means reported in Table \@ref(tab:agemeans1)? The intercept is identical to the mean in the 18-29 category. And each coefficient represents the difference between the mean in the 18-29 category and some other category. For instance, the coefficient associated with the `age40_49` category is `r round(model2$coefficients[3],3)` because `r round(model2$coefficients[1],3)` -- `r abs(round(model2$coefficients[3], 3))` = 12.6. That leads us to this section's upshot:
 
 > **Upshot**: When a regression model is comprised of dummy variables representing mutually exclusive categories, the regression line will pass through the mean value (of the dependent variable) for each category.
 
@@ -183,7 +189,7 @@ One way to understand what's going on is to understand that regression models *m
 
 Of course, as you can see, the intercept term has been estimated, these realities notwithstanding. The reason this happened is that R resolves the conundrum we describe in the paragraph above simply by tossing one variable overboard---in this case the `age60plus` variable. It gives up estimating a coefficient for this variable, thereby reserving some observations with which to estimate the intercept.
 
-We can now see not only that all the regression coefficients changed. We can understand why they changed the way they did. It is no coincidence that the new intercept term, `r round(model2alt$coefficients[1],3)` is identical to the mean of the 60+ category in Table \@ref(tab:agemeans1). In `model2a`, the intercept term represents the mean outcome in the 60+ category. And, all the other coefficients have changed to accommodate this new reference point. For instance, the slope associated with the 50-59 category is `r round(model2alt$coefficients[5],3)` because the mean of this category is `r round(meanstab[4,2],3)` and `r round(model2alt$coefficients[1],3)` -- `r -1*round(model2alt$coefficients[5],3)` = `r round(meanstab[4,2],3)`. Put differently, while `model2` and `model2a` look quite different, they are exactly the same in the sense that, interpreted appropriately, they would lead us to exactly the same conclusions about how age relates to feelings about presidential candidates.
+We can now see not only that all the regression coefficients changed. We can understand why they changed the way they did. It is no coincidence that the new intercept term, `r round(model2alt$coefficients[1],3)` is identical to the mean of the 60+ category in Table \@ref(tab:agemeans1). In `model2a`, the intercept term represents the mean outcome in the 60+ category. And, all the other coefficients have changed to accommodate this new reference point. For instance, the slope associated with the 50-59 category is `r round(model2alt$coefficients[5],3)` because the mean of this category is 2.6 and `r round(model2alt$coefficients[1],3)` -- `r -1*round(model2alt$coefficients[5],3)` = 2.6. Put differently, while `model2` and `model2a` look quite different, they are exactly the same in the sense that, interpreted appropriately, they would lead us to exactly the same conclusions about how age relates to feelings about presidential candidates.
 
 Why was none of this a problem when we estimated `model3`, which had the same age categories estimated via a factor variable? It was no problem because the issue is routine enough that, when R encounters a factor variable in a regression, it knows to exclude one of the factor levels---the level represented by the number 1. It is possible to change the reference category with the relevel command, as in:
 
@@ -245,7 +251,7 @@ p4c
 ```
 The plots tell a similar story, but they do not tell the same story. In (a), the effect of age is constant across its full range; the expected effect of aging from 20 to 21 is exactly the same as aging from 78 to 79, for instance. In (b), we can see an overall downward trend, but it does not occur evenly. People aged 40 to 49 are even more favorable to Joe Biden than people in the lowest age bracket. And people aged 50-59 appear to like Donald Trump more than any other age group. These distinctions---which ``model6`` would have missed---could be consequential. For instance, they could orient us to investigate the possibly conservatizing effects of coming of age during the Reagan administration (which people aged 50-59 would have done). This example shows what we mean when we say that dummy variables make OLS more flexible: where the baseline OLS approach covered in Chapter XX constrains OLS estimates to be uniform and linear in nature, dummy variables allow us to estimate a wide variety of nonlinear relationships---often natural for categorical variables.
 
-There is a lot more we could say about dummy variables. You might be wondering: should I _always_ use dummy variables, rather than their continuous companions? Is possible to break a continuous variable into too many distinct categories? How do I know what number of categories is reasonable? Can dummy variables be used for statistical control, as opposed to being the main analytical focus? These are reasonable questions, but some of them additional concepts to answer, and some of the answers are nuanced. So, we will return to them in Chapter XX, after we have a few more tools under our belt.
+There is a lot more we could say about dummy variables. You might be wondering: should I _always_ use dummy variables, rather than their continuous companions? Is possible to break a continuous variable into too many distinct categories? How do I know what number of categories is reasonable? Can dummy variables be used for statistical control, as opposed to being the main analytical focus? These are reasonable questions, but some of them additional concepts to answer, and some of the answers are nuanced. So, we will return to them after we have a few more tools under our belt.
 
 ## Activities
 

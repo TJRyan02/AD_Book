@@ -68,3 +68,4 @@
 \contentsline {section}{\numberline {13.6}Confidence intervals for predicted values}{127}{section.13.6}%
 \contentsline {section}{\numberline {13.7}Summary}{130}{section.13.7}%
 \contentsline {section}{\numberline {13.8}Activities}{130}{section.13.8}%
+\contentsline {chapter}{\numberline {14}Hypothesis Testing}{133}{chapter.14}%
