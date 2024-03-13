@@ -175,6 +175,21 @@ p3
 
 Take a minute to compare Figure \@ref(fig:agedum5) to the regression results in `model3`, noting how they relate to each other. Again, the intercept tells us the mean of the `age18_29` category, and the coefficients tell us what addition or subtraction would need to be applied to arrive at the mean of another category.
 
+``` {r, echo = F, eval = F}
+# Created for class visual
+
+p3b <- ggplot(df, aes(x = age, y = biden_dif)) + 
+  geom_jitter(width = .02, size = 0.25) +
+  coord_cartesian(ylim = c(-5, 20)) +
+  stat_smooth(method= "lm", se = F, color = "black") +
+  theme_bw()
+p3b
+
+fit <- lm(biden_dif ~ agefactor, data = df)
+summary(fit)
+```
+
+
 ## Reference categories {#refcats}
 
 Above, we noted that `model2` excluded one of our dummy variables, `age18_29`. Why? Let's see what would have happened if we had included it.

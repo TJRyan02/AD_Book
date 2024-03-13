@@ -59,7 +59,7 @@
 \contentsline {section}{\numberline {12.5}Uncertainty versus \emph {statistical} uncertainty}{117}{section.12.5}%
 \contentsline {section}{\numberline {12.6}Wrapping up}{117}{section.12.6}%
 \contentsline {section}{\numberline {12.7}Activities}{118}{section.12.7}%
-\contentsline {chapter}{\numberline {13}Putting Standard Errors to Use}{121}{chapter.13}%
+\contentsline {chapter}{\numberline {13}Putting Standard Errors to Use 1: Confidence Intervals}{121}{chapter.13}%
 \contentsline {section}{\numberline {13.1}Constructing a confidence interval with the Standard Normal distribution}{121}{section.13.1}%
 \contentsline {section}{\numberline {13.2}Interpreting a confidence interval}{123}{section.13.2}%
 \contentsline {section}{\numberline {13.3}Generalizing confidence interval calculations}{124}{section.13.3}%
@@ -68,4 +68,11 @@
 \contentsline {section}{\numberline {13.6}Confidence intervals for predicted values}{127}{section.13.6}%
 \contentsline {section}{\numberline {13.7}Summary}{130}{section.13.7}%
 \contentsline {section}{\numberline {13.8}Activities}{130}{section.13.8}%
-\contentsline {chapter}{\numberline {14}Hypothesis Testing}{133}{chapter.14}%
+\contentsline {chapter}{\numberline {14}Putting standard errors to use 2: Hypothesis testing}{133}{chapter.14}%
+\contentsline {section}{\numberline {14.1}Hypothesis testing and \emph {modus tollens}}{135}{section.14.1}%
+\contentsline {section}{\numberline {14.2}The null hypothesis of no differences.}{137}{section.14.2}%
+\contentsline {section}{\numberline {14.3}Testing the null}{138}{section.14.3}%
+\contentsline {section}{\numberline {14.4}P-values and t-statistics}{141}{section.14.4}%
+\contentsline {section}{\numberline {14.5}Common approaches to comparing groups}{142}{section.14.5}%
+\contentsline {section}{\numberline {14.6}What p-value should I look for?}{143}{section.14.6}%
+\contentsline {section}{\numberline {14.7}Activity}{145}{section.14.7}%

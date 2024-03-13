@@ -1,25 +1,25 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2024.1.29)  30 JAN 2024 11:36
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2024.3.12)  13 MAR 2024 10:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **APA_Book.tex
 (./APA_Book.tex
 LaTeX2e <2023-11-01> patch level 1
-L3 programming layer <2024-01-22>
+L3 programming layer <2024-02-20>
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/base/book.cls
 Document Class: book 2023/05/17 v1.4n Standard LaTeX document class
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/base/bk10.clo
 File: bk10.clo 2023/05/17 v1.4n Standard LaTeX file (size option)
 )
-\c@part=\count183
-\c@chapter=\count184
-\c@section=\count185
-\c@subsection=\count186
-\c@subsubsection=\count187
-\c@paragraph=\count188
-\c@subparagraph=\count189
-\c@figure=\count190
-\c@table=\count191
+\c@part=\count184
+\c@chapter=\count185
+\c@section=\count186
+\c@subsection=\count187
+\c@subsubsection=\count188
+\c@paragraph=\count189
+\c@subparagraph=\count190
+\c@figure=\count191
+\c@table=\count192
 \abovecaptionskip=\skip48
 \belowcaptionskip=\skip49
 \bibindent=\dimen140
@@ -39,14 +39,14 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count192
+\inf@bad=\count193
 LaTeX Info: Redefining \frac on input line 234.
-\uproot@=\count193
-\leftroot@=\count194
+\uproot@=\count194
+\leftroot@=\count195
 LaTeX Info: Redefining \overline on input line 399.
 LaTeX Info: Redefining \colon on input line 410.
-\classnum@=\count195
-\DOTSCASE@=\count196
+\classnum@=\count196
+\DOTSCASE@=\count197
 LaTeX Info: Redefining \ldots on input line 496.
 LaTeX Info: Redefining \dots on input line 499.
 LaTeX Info: Redefining \cdots on input line 620.
@@ -59,20 +59,20 @@ LaTeX Info: Redefining \Bigg on input line 725.
 \big@size=\dimen143
 LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
-\macc@depth=\count197
+\macc@depth=\count198
 LaTeX Info: Redefining \bmod on input line 905.
 LaTeX Info: Redefining \pmod on input line 910.
 LaTeX Info: Redefining \smash on input line 940.
 LaTeX Info: Redefining \relbar on input line 970.
 LaTeX Info: Redefining \Relbar on input line 971.
-\c@MaxMatrixCols=\count198
+\c@MaxMatrixCols=\count199
 \dotsspace@=\muskip16
-\c@parentequation=\count199
-\dspbrk@lvl=\count266
+\c@parentequation=\count266
+\dspbrk@lvl=\count267
 \tag@help=\toks18
-\row@=\count267
-\column@=\count268
-\maxfields@=\count269
+\row@=\count268
+\column@=\count269
+\maxfields@=\count270
 \andhelp@=\toks19
 \eqnshift@=\dimen144
 \alignsep@=\dimen145
@@ -98,37 +98,37 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 )) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
 Package: iftex 2022/02/03 v1.0f TeX engine tests
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math.sty (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2024-01-22 L3 programming layer (loader) 
+Package: expl3 2024-02-20 L3 programming layer (loader) 
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
-File: l3backend-xetex.def 2024-01-04 L3 backend support: XeTeX
-\g__graphics_track_int=\count270
+File: l3backend-xetex.def 2024-02-20 L3 backend support: XeTeX
+\g__graphics_track_int=\count271
 \l__pdf_internal_box=\box53
-\g__pdf_backend_object_int=\count271
-\g__pdf_backend_annotation_int=\count272
-\g__pdf_backend_link_int=\count273
+\g__pdf_backend_object_int=\count272
+\g__pdf_backend_annotation_int=\count273
+\g__pdf_backend_link_int=\count274
 ))
 Package: unicode-math 2023/08/13 v0.8r Unicode maths in XeLaTeX and LuaLaTeX
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.sty
 Package: unicode-math-xetex 2023/08/13 v0.8r Unicode maths in XeLaTeX and LuaLaTeX
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
-Package: xparse 2023-10-10 L3 Experimental document command parser
+Package: xparse 2024-02-18 L3 Experimental document command parser
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
-Package: l3keys2e 2023-10-10 LaTeX2e option processing using LaTeX3 keys
+Package: l3keys2e 2024-02-18 LaTeX2e option processing using LaTeX3 keys
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/fontspec/fontspec.sty
-Package: fontspec 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTeX
+Package: fontspec 2024/02/13 v2.9a Font selection for XeLaTeX and LuaLaTeX
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
-Package: fontspec-xetex 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTeX
-\l__fontspec_script_int=\count274
-\l__fontspec_language_int=\count275
-\l__fontspec_strnum_int=\count276
-\l__fontspec_tmp_int=\count277
-\l__fontspec_tmpa_int=\count278
-\l__fontspec_tmpb_int=\count279
-\l__fontspec_tmpc_int=\count280
-\l__fontspec_em_int=\count281
-\l__fontspec_emdef_int=\count282
-\l__fontspec_strong_int=\count283
-\l__fontspec_strongdef_int=\count284
+Package: fontspec-xetex 2024/02/13 v2.9a Font selection for XeLaTeX and LuaLaTeX
+\l__fontspec_script_int=\count275
+\l__fontspec_language_int=\count276
+\l__fontspec_strnum_int=\count277
+\l__fontspec_tmp_int=\count278
+\l__fontspec_tmpa_int=\count279
+\l__fontspec_tmpb_int=\count280
+\l__fontspec_tmpc_int=\count281
+\l__fontspec_em_int=\count282
+\l__fontspec_emdef_int=\count283
+\l__fontspec_strong_int=\count284
+\l__fontspec_strongdef_int=\count285
 \l__fontspec_tmpa_dim=\dimen150
 \l__fontspec_tmpb_dim=\dimen151
 \l__fontspec_tmpc_dim=\dimen152
@@ -140,9 +140,9 @@ Package: fix-cm 2020/11/24 v1.1t fixes to LaTeX
 File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
 ))
-\g__um_fam_int=\count285
-\g__um_fonts_used_int=\count286
-\l__um_primecount_int=\count287
+\g__um_fam_int=\count286
+\g__um_fonts_used_int=\count287
+\l__um_primecount_int=\count288
 \g__um_primekern_muskip=\muskip17
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex))) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/lm/lmodern.sty
 Package: lmodern 2015/05/01 v1.6.1 Latin Modern Fonts
@@ -189,11 +189,11 @@ Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks22
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count288
+\etb@tempcnta=\count289
 )
 \MT@toks=\toks23
 \MT@tempbox=\box54
-\MT@count=\count289
+\MT@count=\count290
 LaTeX Info: Redefining \noprotrusionifhmode on input line 1059.
 LaTeX Info: Redefining \leftprotrusion on input line 1060.
 \MT@prot@toks=\toks24
@@ -201,7 +201,7 @@ LaTeX Info: Redefining \rightprotrusion on input line 1078.
 LaTeX Info: Redefining \textls on input line 1368.
 \MT@outer@kern=\dimen153
 LaTeX Info: Redefining \textmicrotypecontext on input line 1988.
-\MT@listname@count=\count290
+\MT@listname@count=\count291
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/microtype/microtype-xetex.def
 File: microtype-xetex.def 2023/03/13 v3.1a Definitions specific to xetex (RS)
 LaTeX Info: Redefining \lsstyle on input line 238.
@@ -236,11 +236,11 @@ Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
 Package: fancyvrb 2024/01/20 4.5c verbatim text (tvz,hv)
-\FV@CodeLineNo=\count291
+\FV@CodeLineNo=\count292
 \FV@InFile=\read2
 \FV@TabBox=\box55
-\c@FancyVerbLine=\count292
-\FV@StepNumber=\count293
+\c@FancyVerbLine=\count293
+\FV@StepNumber=\count294
 \FV@OutFile=\write3
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/framed/framed.sty
 Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
@@ -255,17 +255,17 @@ Package: longtable 2023-11-01 v4.19 Multi-page Table package (DPC)
 \LTright=\skip55
 \LTpre=\skip56
 \LTpost=\skip57
-\LTchunksize=\count294
+\LTchunksize=\count295
 \LTcapwidth=\dimen158
 \LT@head=\box56
 \LT@firsthead=\box57
 \LT@foot=\box58
 \LT@lastfoot=\box59
 \LT@gbox=\box60
-\LT@cols=\count295
-\LT@rows=\count296
-\c@LT@tables=\count297
-\c@LT@chunks=\count298
+\LT@cols=\count296
+\LT@rows=\count297
+\c@LT@tables=\count298
+\c@LT@chunks=\count299
 \LT@p@ftn=\toks25
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
@@ -279,12 +279,12 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen166
 \cmidrulekern=\dimen167
 \defaultaddspace=\dimen168
-\@cmidla=\count299
-\@cmidlb=\count300
+\@cmidla=\count300
+\@cmidlb=\count301
 \@aboverulesep=\dimen169
 \@belowrulesep=\dimen170
-\@thisruleclass=\count301
-\@lastruleclass=\count302
+\@thisruleclass=\count302
+\@lastruleclass=\count303
 \@thisrulewidth=\dimen171
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/tools/array.sty
 Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
@@ -297,15 +297,15 @@ Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
 \ar@cellbox=\box62
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2023/07/08 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count303
-\calc@Bcount=\count304
+\calc@Acount=\count304
+\calc@Bcount=\count305
 \calc@Adimen=\dimen174
 \calc@Bdimen=\dimen175
 \calc@Askip=\skip60
 \calc@Bskip=\skip61
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count305
+\calc@Ccount=\count306
 \calc@Cskip=\skip62
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/footnotehyper/footnotehyper.sty
 Package: footnotehyper 2021/08/13 v1.1e hyperref aware footnote.sty (JFB)
@@ -350,27 +350,27 @@ Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@hangindent=\dimen186
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count306
-\c@continuedfloat=\count307
+\c@caption@flags=\count307
+\c@continuedfloat=\count308
 Package caption Info: longtable package is loaded.
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/caption/ltcaption.sty
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 )) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/siunitx/siunitx.sty
-Package: siunitx 2024-01-25 v3.3.10 A comprehensive (SI) units package
-\l__siunitx_number_uncert_offset_int=\count308
-\l__siunitx_number_exponent_fixed_int=\count309
-\l__siunitx_number_min_decimal_int=\count310
-\l__siunitx_number_min_integer_int=\count311
-\l__siunitx_number_round_precision_int=\count312
-\l__siunitx_number_lower_threshold_int=\count313
-\l__siunitx_number_upper_threshold_int=\count314
-\l__siunitx_number_group_first_int=\count315
-\l__siunitx_number_group_size_int=\count316
-\l__siunitx_number_group_minimum_int=\count317
+Package: siunitx 2024-02-15 v3.3.12 A comprehensive (SI) units package
+\l__siunitx_number_uncert_offset_int=\count309
+\l__siunitx_number_exponent_fixed_int=\count310
+\l__siunitx_number_min_decimal_int=\count311
+\l__siunitx_number_min_integer_int=\count312
+\l__siunitx_number_round_precision_int=\count313
+\l__siunitx_number_lower_threshold_int=\count314
+\l__siunitx_number_upper_threshold_int=\count315
+\l__siunitx_number_group_first_int=\count316
+\l__siunitx_number_group_size_int=\count317
+\l__siunitx_number_group_minimum_int=\count318
 \l__siunitx_angle_tmp_dim=\dimen187
 \l__siunitx_angle_marker_box=\box64
 \l__siunitx_angle_unit_box=\box65
-\l__siunitx_compound_count_int=\count318
+\l__siunitx_compound_count_int=\count319
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/translations/translations.sty
 Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages (CN)
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
@@ -392,29 +392,29 @@ Package pdftexcmds Info: \pdfdraftmode not found.
 \l__siunitx_table_after_box=\box71
 \l__siunitx_table_before_dim=\dimen190
 \l__siunitx_table_carry_dim=\dimen191
-\l__siunitx_unit_tmp_int=\count319
-\l__siunitx_unit_position_int=\count320
-\l__siunitx_unit_total_int=\count321
+\l__siunitx_unit_tmp_int=\count320
+\l__siunitx_unit_position_int=\count321
+\l__siunitx_unit_total_int=\count322
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/generic/ulem/ulem.sty
 \UL@box=\box72
 \UL@hyphenbox=\box73
 \UL@skip=\skip66
 \UL@hook=\toks34
 \UL@height=\dimen192
-\UL@pe=\count322
+\UL@pe=\count323
 \UL@pixel=\dimen193
 \ULC@box=\box74
 Package: ulem 2019/11/18
 \ULdepth=\dimen194
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/colortbl/colortbl.sty
-Package: colortbl 2022/06/20 v1.0f Color table columns (DPC)
+Package: colortbl 2024/02/20 v1.0g Color table columns (DPC)
 \everycr=\toks35
 \minrowclearance=\skip67
-\rownum=\count323
+\rownum=\count324
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
 \multirow@colwidth=\skip68
-\multirow@cntb=\count324
+\multirow@cntb=\count325
 \multirow@dima=\skip69
 \bigstrutjot=\dimen195
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/tools/hhline.sty
@@ -426,7 +426,7 @@ Package: tabularx 2023/07/08 v2.11c `tabularx' package (DPC)
 \TX@old@col=\dimen198
 \TX@target=\dimen199
 \TX@delta=\dimen256
-\TX@cols=\count325
+\TX@cols=\count326
 \TX@ftn=\toks36
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/threeparttable/threeparttable.sty
 Package: threeparttable 2003/06/13  v 3.0
@@ -434,7 +434,7 @@ Package: threeparttable 2003/06/13  v 3.0
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/wrapfig/wrapfig.sty
 \wrapoverhang=\dimen257
 \WF@size=\dimen258
-\c@WF@wrappedlines=\count326
+\c@WF@wrappedlines=\count327
 \WF@box=\box76
 \WF@everypar=\toks37
 Package: wrapfig 2003/01/31  v 3.6
@@ -446,7 +446,7 @@ Package: xkeyval 2022/06/16 v2.9 package option processing (HA)
 \XKV@toks=\toks38
 \XKV@tempa@toks=\toks39
 )
-\XKV@depth=\count327
+\XKV@depth=\count328
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 )) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/adjustbox/adjcalc.sty
 Package: adjcalc 2012/05/16 v1.1 Provides advanced setlength with multiple back-ends (calc, etex, pgfmath)
@@ -474,11 +474,11 @@ File: tc-xetex.def 2019/01/04 v2.2 Clipping driver for xetex
 \adjbox@ptotalheight=\dimen270
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
 Package: ifoddpage 2022/10/18 v1.2 Conditionals for odd/even page detection
-\c@checkoddpage=\count328
+\c@checkoddpage=\count329
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/varwidth/varwidth.sty
 Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \@vwid@box=\box78
-\sift@deathcycles=\count329
+\sift@deathcycles=\count330
 \@vwid@loff=\dimen271
 \@vwid@roff=\dimen272
 )) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty
@@ -498,17 +498,17 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count330
+\c@section@level=\count331
 )
 \@linkdim=\dimen273
-\Hy@linkcounter=\count331
-\Hy@pagecounter=\count332
+\Hy@linkcounter=\count332
+\Hy@pagecounter=\count333
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2024-01-20 v7.01h Hyperref: PDFDocEncoding definition (HO)
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count333
+\Hy@SavedSpaceFactor=\count334
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
 File: puenc.def 2024-01-20 v7.01h Hyperref: PDF Unicode definition (HO)
 )
@@ -520,7 +520,7 @@ Package hyperref Info: Plain pages OFF on input line 4194.
 Package hyperref Info: Backreferencing OFF on input line 4199.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4446.
-\c@Hy@tempcnt=\count334
+\c@Hy@tempcnt=\count335
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
@@ -532,7 +532,7 @@ Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
 ))
-\Fld@menulength=\count335
+\Fld@menulength=\count336
 \Field@Width=\dimen275
 \Fld@charsize=\dimen276
 Package hyperref Info: Hyper figures OFF on input line 6063.
@@ -546,9 +546,9 @@ Package hyperref Info: PDF/A mode OFF on input line 6093.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count336
-\c@Item=\count337
-\c@Hfootnote=\count338
+\Hy@abspage=\count337
+\c@Item=\count338
+\c@Hfootnote=\count339
 )
 Package hyperref Info: Driver (autodetected): hxetex.
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hxetex.def
@@ -557,10 +557,10 @@ File: hxetex.def 2024-01-20 v7.01h Hyperref driver for XeTeX
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
 )
 \pdfm@box=\box79
-\c@Hy@AnnotLevel=\count339
-\HyField@AnnotCount=\count340
-\Fld@listcount=\count341
-\c@bookmark@seq@number=\count342
+\c@Hy@AnnotLevel=\count340
+\HyField@AnnotCount=\count341
+\Fld@listcount=\count342
+\c@bookmark@seq@number=\count343
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
 Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/base/atveryend-ltx.sty
@@ -574,7 +574,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
 \Hy@SectionHShift=\skip70
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count343
+\c@float@type=\count344
 \float@exts=\toks40
 \float@box=\box80
 \@float@everytoks=\toks41
@@ -589,12 +589,12 @@ Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 Package pdflscape Info: Auto-detected driver: dvipdfm (xetex) on input line 98.
 )) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/tabu/tabu.sty
 Package: tabu 2019/01/11 v2.9 - flexible LaTeX tabulars (FC+tabu-fixed)
-\c@taburow=\count344
-\tabu@nbcols=\count345
-\tabu@cnt=\count346
-\tabu@Xcol=\count347
-\tabu@alloc=\count348
-\tabu@nested=\count349
+\c@taburow=\count345
+\tabu@nbcols=\count346
+\tabu@cnt=\count347
+\tabu@Xcol=\count348
+\tabu@alloc=\count349
+\tabu@nested=\count350
 \tabu@target=\dimen277
 \tabu@spreadtarget=\dimen278
 \tabu@naturalX=\dimen279
@@ -622,19 +622,19 @@ Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/makecell/makecell.sty
 Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
 \rotheadsize=\dimen286
-\c@nlinenum=\count350
+\c@nlinenum=\count351
 \TeXr@lab=\toks44
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip73
 \bibsep=\skip74
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count351
+\c@NAT@ctr=\count352
 ) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
 (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/bookmark/bkm-dvipdfm.def
 File: bkm-dvipdfm.def 2023-12-10 v1.31 bookmark driver for dvipdfm (HO)
-\BKM@id=\count352
+\BKM@id=\count353
 )) (/Users/TJRyan/Library/TinyTeX/texmf-dist/tex/latex/xurl/xurl.sty
 Package: xurl 2022/01/09 v 0.10 modify URL breaks
 )
@@ -1131,7 +1131,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 621--623
 ]
 Chapter 5.
 
-Overfull \vbox (0.15999pt too high) detected at line 665
+Overfull \vbox (0.15999pt too high) detected at line 667
  []
 
 [33]
@@ -1147,7 +1147,7 @@ File: APA_Book_files/figure-latex/covid-nyc-2-1.pdf Graphic file (type pdf)
 File: APA_Book_files/figure-latex/quad6-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/quad6-1.pdf>
 [37] [38]
-Underfull \hbox (badness 1931) in paragraph at lines 865--865
+Underfull \hbox (badness 1931) in paragraph at lines 867--867
 []\TU/lmr/bx/n/14.4 Interpreting Coefficients in a Quadratic
  []
 
@@ -1168,13 +1168,13 @@ File: APA_Book_files/figure-latex/gpdfig1-1.pdf Graphic file (type pdf)
 File: APA_Book_files/figure-latex/log2-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/log2-1.pdf>
 
-LaTeX Warning: Reference `fig:log2' on page 48 undefined on input line 1130.
+LaTeX Warning: Reference `fig:log2' on page 48 undefined on input line 1132.
 
 
-LaTeX Warning: Reference `fig:log2' on page 48 undefined on input line 1130.
+LaTeX Warning: Reference `fig:log2' on page 48 undefined on input line 1132.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1129--1131
+Underfull \hbox (badness 10000) in paragraph at lines 1131--1133
 []
  []
 
@@ -1187,7 +1187,7 @@ Overfull \hbox (175.14516pt too wide) has occurred while \output is active
  []
 
 [49]
-Overfull \hbox (133.21005pt too wide) in paragraph at lines 1148--1161
+Overfull \hbox (133.21005pt too wide) in paragraph at lines 1150--1163
  [][] 
  []
 
@@ -1198,7 +1198,10 @@ File: APA_Book_files/figure-latex/loggdpplot-1.pdf Graphic file (type pdf)
 Chapter 7.
 [55
 
-] [56] [57] [58] [59] [60] [61] [62]
+] [56] [57] [58] [59] [60]
+Underfull \vbox (badness 1331) has occurred while \output is active []
+
+[61] [62]
 File: APA_Book_files/figure-latex/interf1-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/interf1-1.pdf>
 [63] [64] [65] [66
@@ -1221,22 +1224,22 @@ Chapter 10.
 [79
 
 ] [80]
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2389--2389
 []\TU/lmtt/m/n/10 ##  [1] "No war" "No war" "No war" "No war" "No war" "No war" "No war" "No war"[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2389--2389
 []\TU/lmtt/m/n/10 ##  [9] "No war" "No war" "No war" "No war" "No war" "No war" "No war" "No war"[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2389--2389
 []\TU/lmtt/m/n/10 ## [17] "No war" "No war" "No war" "No war" "No war" "No war" "No war" "No war"[] 
  []
 
 
-Overfull \hbox (69.75pt too wide) in paragraph at lines 2395--2395
+Overfull \hbox (69.75pt too wide) in paragraph at lines 2389--2389
 []\TU/lmtt/m/n/10 ## [25] "No war" "No war" "No war" "No war" "No war" "No war" "No war" "No war"[] 
  []
 
@@ -1254,8 +1257,8 @@ Chapter 11.
 File: APA_Book_files/figure-latex/bernoullicdf-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/bernoullicdf-1.pdf>
 [94] [95] [96] [97]
-File: APA_Book_files/figure-latex/unnamed-chunk-64-1.pdf Graphic file (type pdf)
-<use APA_Book_files/figure-latex/unnamed-chunk-64-1.pdf>
+File: APA_Book_files/figure-latex/unnamed-chunk-65-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/unnamed-chunk-65-1.pdf>
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
@@ -1270,11 +1273,11 @@ File: APA_Book_files/figure-latex/musigma-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/musigma-1.pdf>
 [102] [103]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 2914.
+(Font)              scaled to size 14.4pt on input line 2908.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 14.4013pt on input line 2914.
+(Font)              scaled to size 14.4013pt on input line 2908.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 14.39845pt on input line 2914.
+(Font)              scaled to size 14.39845pt on input line 2908.
 File: APA_Book_files/figure-latex/tdist-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/tdist-1.pdf>
 [104] [105]
@@ -1307,35 +1310,146 @@ File: APA_Book_files/figure-latex/conf75-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/conf75-1.pdf>
 Missing character: There is no ≤ (U+2264) in font [lmmono10-italic]:!
 Missing character: There is no ≥ (U+2265) in font [lmmono10-italic]:!
-[122] [123] [124] [125]
-Overfull \hbox (6.75pt too wide) in paragraph at lines 3643--3643
+
+Overfull \hbox (73.73843pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 122 \TU/lmr/m/sl/10 CHAPTER 13.  PUTTING STANDARD ERRORS TO USE 1: CONFIDENCE INTERVALS
+ []
+
+[122] [123]
+Overfull \hbox (73.73843pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 124 \TU/lmr/m/sl/10 CHAPTER 13.  PUTTING STANDARD ERRORS TO USE 1: CONFIDENCE INTERVALS
+ []
+
+[124] [125]
+Overfull \hbox (6.75pt too wide) in paragraph at lines 3637--3637
 []\TU/lmtt/m/n/10 ## (Intercept) 43.68530    1.23880  35.264 < 0.0000000000000002 ***[] 
  []
 
 
-Overfull \hbox (6.75pt too wide) in paragraph at lines 3643--3643
+Overfull \hbox (6.75pt too wide) in paragraph at lines 3637--3637
 []\TU/lmtt/m/n/10 ## age          0.11130    0.02286   4.868           0.00000115 ***[] 
  []
 
+
+Overfull \hbox (73.73843pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 126 \TU/lmr/m/sl/10 CHAPTER 13.  PUTTING STANDARD ERRORS TO USE 1: CONFIDENCE INTERVALS
+ []
+
 [126]
-Overfull \vbox (1.55838pt too high) detected at line 3702
+Overfull \vbox (1.55838pt too high) detected at line 3696
  []
 
 [127]
-File: APA_Book_files/figure-latex/unnamed-chunk-82-1.pdf Graphic file (type pdf)
-<use APA_Book_files/figure-latex/unnamed-chunk-82-1.pdf>
+File: APA_Book_files/figure-latex/unnamed-chunk-83-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/unnamed-chunk-83-1.pdf>
 File: APA_Book_files/figure-latex/bowtie-1.pdf Graphic file (type pdf)
 <use APA_Book_files/figure-latex/bowtie-1.pdf>
-[128] [129] [130] [131] [132]
+
+Overfull \hbox (73.73843pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 128 \TU/lmr/m/sl/10 CHAPTER 13.  PUTTING STANDARD ERRORS TO USE 1: CONFIDENCE INTERVALS
+ []
+
+[128] [129]
+Overfull \hbox (73.73843pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 130 \TU/lmr/m/sl/10 CHAPTER 13.  PUTTING STANDARD ERRORS TO USE 1: CONFIDENCE INTERVALS
+ []
+
+[130] [131]
+Overfull \hbox (73.73843pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 132 \TU/lmr/m/sl/10 CHAPTER 13.  PUTTING STANDARD ERRORS TO USE 1: CONFIDENCE INTERVALS
+ []
+
+[132]
 Chapter 14.
-(./APA_Book.bbl [133
+[133
 
-] [134
+]
+Overfull \hbox (90.75pt too wide) in paragraph at lines 3849--3849
+[]\TU/lmtt/m/n/10 ## -- Column specification --------------------------------------------------------[] 
+ []
 
-]) [135] (./APA_Book.aux)
+
+Overfull \hbox (43.5pt too wide) in paragraph at lines 3849--3849
+[]\TU/lmtt/m/n/10 ## i Use []spec()[] to retrieve the full column specification for this data.[] 
+ []
+
+
+Overfull \hbox (96.0pt too wide) in paragraph at lines 3849--3849
+[]\TU/lmtt/m/n/10 ## i Specify the column types or set []show_col_types = FALSE[] to quiet this message.[] 
+ []
+
+
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 134 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[134] [135]
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 136 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[136] [137]
+File: APA_Book_files/figure-latex/hypoth1-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/hypoth1-1.pdf>
+
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 138 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[138]
+File: APA_Book_files/figure-latex/hypoth2-1.pdf Graphic file (type pdf)
+<use APA_Book_files/figure-latex/hypoth2-1.pdf>
+[139]
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 140 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[140] [141]
+Overfull \hbox (75.0pt too wide) in paragraph at lines 4081--4081
+[]\TU/lmtt/m/n/10 ##                               Estimate Std. Error t value            Pr(>|t|)[] 
+ []
+
+
+Overfull \hbox (75.0pt too wide) in paragraph at lines 4081--4081
+[]\TU/lmtt/m/n/10 ## (Intercept)                    2.21526    0.09688   22.86 <0.0000000000000002[] 
+ []
+
+
+Overfull \hbox (75.0pt too wide) in paragraph at lines 4081--4081
+[]\TU/lmtt/m/n/10 ## as.factor(tweets)norm_violate  0.11909    0.13855    0.86                0.39[] 
+ []
+
+
+Overfull \hbox (6.75pt too wide) in paragraph at lines 4081--4081
+[]\TU/lmtt/m/n/10 ## Multiple R-squared:  0.0003697,  Adjusted R-squared:  -0.0001306[] 
+ []
+
+
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 142 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[142]
+Overfull \hbox (253.5pt too wide) in paragraph at lines 4107--4107
+[]\TU/lmtt/m/n/10 ## alternative hypothesis: true difference in means between group control and group norm_violate is not equal to 0[] 
+ []
+
+[143]
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 144 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[144] (./APA_Book.bbl [145]
+Overfull \hbox (59.64844pt too wide) has occurred while \output is active
+\TU/lmr/m/n/10 146 \TU/lmr/m/sl/10 CHAPTER 14.  PUTTING STANDARD ERRORS TO USE 2: HYPOTHESIS TESTING
+ []
+
+[146
+
+] [147]) [148] (./APA_Book.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
-L3 programming layer <2024-01-22>
+L3 programming layer <2024-02-20>
  ***********
 
 LaTeX Warning: There were undefined references.
@@ -1345,12 +1459,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 27547 strings out of 474879
- 557974 string characters out of 5757546
- 1941627 words of memory out of 5000000
- 49153 multiletter control sequences out of 15000+600000
- 565675 words of font info for 107 fonts, out of 8000000 for 9000
+ 27655 strings out of 474773
+ 561157 string characters out of 5755054
+ 1943839 words of memory out of 5000000
+ 49364 multiletter control sequences out of 15000+600000
+ 565683 words of font info for 108 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 90i,15n,120p,1494b,1051s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,15n,121p,1497b,1051s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on APA_Book.pdf (135 pages).
+Output written on APA_Book.pdf (148 pages).

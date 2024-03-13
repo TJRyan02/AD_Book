@@ -1,5 +1,7 @@
 ```{r, echo = FALSE}
 rm(list = ls())
+knitr::opts_knit$set(root.dir = "/Users/TJRyan/Library/CloudStorage/Dropbox/Active Political Analysis/APA_Book")
+setwd("/Users/TJRyan/Library/CloudStorage/Dropbox/Active Political Analysis/APA_Book")
 ```
 
 # Interaction terms {#interactintro}
@@ -49,7 +51,7 @@ hux1
 
 Table \@ref(tab:intert1) displays the results of such an approach. The left-hand column shows the estimated effect of economic perceptions among people who do not know someone who lost their job; the right-hand column shows the estimated effect among people who do know someone who lost their job. Each `econperc` coefficient is consistent with the expectation that favorable economic perceptions benefit the incumbent, since higher values on `econperc` are associated with relatively more positive feelings toward Donald Trump. But comparing the two `econperc` coefficients to each other provides evidence against the hypothesis we sought to test. Above, we posited that observing job loss would *increase* the effect of economic perceptions. In fact, the estimated effect became smaller, since `r round(model2a$coefficients[2], 3)` \> `r round(model2b$coefficients[2], 3)`.
 
-The subsample approach is getting us farther, but it has some shortcomings. First, it was only possible because the variable we thought might condition the effect of `econper`---`lostjob`---is categorical. In fact, it takes on only two values (0 and 1), which leads to clean subsetting. It's not clear how we could implement the subsetting approach if the conditioning variable were something like income, which in principle could take on hundreds of different values. Second, although we can eyeball the difference between `round(model2a$coefficients[2], 3)` and `r round(model2b$coefficients[2], 3)`, it will prove difficult to conduct formal analyses of this difference---the focus of our inquiry!---when they exist in separate regressions. Third, the subsetting approach would become messier if we desired---as we well might---to include one or more control variables. These controls would have different estimated effects in each subset. As a result, the comparison of the two `econperc` coefficients would cease to be an even "apples to apples" comparison.
+The subsample approach is getting us farther, but it has some shortcomings. First, it was only possible because the variable we thought might condition the effect of `econper`---`lostjob`---is categorical. In fact, it takes on only two values (0 and 1), which leads to clean subsetting. It's not clear how we could implement the subsetting approach if the conditioning variable were something like income, which in principle could take on hundreds of different values. Second, although we can eyeball the difference between `r round(model2a$coefficients[2], 3)` and `r round(model2b$coefficients[2], 3)`, it will prove difficult to conduct formal analyses of this difference---the focus of our inquiry!---when they exist in separate regressions. Third, the subsetting approach would become messier if we desired---as we well might---to include one or more control variables. These controls would have different estimated effects in each subset. As a result, the comparison of the two `econperc` coefficients would cease to be an even "apples to apples" comparison.
 
 The solution to all these issues is a tool called an interaction term, which will allow us to consider results like those reported in Table \@ref(tab:intert1) in *one* regression model, rather than two. Before we get to the specifics, let us remark on this chapter's significance. At first blush, one might see interaction terms as being only marginally useful. Viewed a certain way, they amount to a mere reformulation of something you have already learned how to do: analysis within subgroups. In fact, we consider interaction terms to be one of the most important topics covered in the second half of the book. So many avenues of social scientific inquiry lead researchers to consider conditional (or "heterogenous") effects: they know that some association exists, and the real learning focuses on understanding the circumstances that make it larger or smaller. Interaction terms represent an elegant and extremely flexible way to investigate such matters via regression analysis.
 
@@ -69,14 +71,14 @@ This model is wrong. But what would happen if we multiplied the `econperc` varia
 Y &= \beta_0 + \beta_1 econperc + \beta_2 lostjob + \beta_3  econperc \times  lostjob + \epsilon (\#eq:inter2)
 \end{align}
 ```
-In R, this would literally be:
+In R, this could literally be:
 
 ```{r}
 df$econ_x_job <- df$econperc * df$lostjob
 model3a <- lm(trump_dif ~ econperc + lostjob + econ_x_job, data = df)
 ```
 
-Why would we do this? We would do it because multiplication is a way mathematically to represent the idea of *co-occurrence*. Consider Table \@ref(tab:intercases), which reports the values of `econperc`, `lostjob`, and `econ_x_job` for eight illustrative cases from the dataset. The `econ_x_job` column is identical to the `econperc` column---but *only* for the rows where `lostjob`=1. It reports the value of `econperc` but only for the people who observed job loss. Of course, the straightforwardness of this interpretation gets a big assist from the fact that the value 0 is well-defined for both `econperc` and `lostjob`. As we shall later in this chapter, having a clear sense of what 0 means for each component of an interaction term greatly facilitates interpretation of related results.
+Why would we do this? We would do it because multiplication is a way mathematically to represent the idea of *co-occurrence*. Consider Table \@ref(tab:intercases), which reports the values of `econperc`, `lostjob`, and `econ_x_job` for eight illustrative cases from the dataset. The `econ_x_job` column is identical to the `econperc` column---but *only* for the rows where `lostjob`==1. It reports the value of `econperc` but only for the people who observed job loss. Of course, the straightforwardness of this interpretation gets a big assist from the fact that the value 0 is well-defined for both `econperc` and `lostjob`. As we shall later in this chapter, having a clear sense of what 0 means for each component of an interaction term greatly facilitates interpretation of related results.
 
 ```{r intercases, echo = F}
 inter_small <- df %>% filter(case %in% c(200053, 201209, 200305, 200169, 200558, 200718, 200725)) %>% select(case, econperc, lostjob, econ_x_job)

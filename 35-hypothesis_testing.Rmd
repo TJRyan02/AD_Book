@@ -13,4 +13,248 @@ library(dplyr)
 options(scipen = 999)
 ```
 
-# Hypothesis Testing {#hypothtesting}
+# Putting standard errors to use 2: Hypothesis testing {#hypothtesting}
+
+In the lead up and immediate aftermath of the 2020 Presidential Election, Donald Trump and his surrogates made many statements attempting to preemptively cast doubt on the integrity of the upcoming election result. For instance, in July of 2020, the president falsely tweeted that "The 2020 Election will be totally rigged if Mail-In Voting is allowed to take place, & everyone knows it." In some cases, the messages seemed to encourage violence. For instance, on December 30, L. Lin Wood, a well-known Trump supporter, said on Parler, "Each citizen must now make a decision. Will you sit quietly & allow Communists & Globalists to control every aspect of your lives? Or will you stand tall & #FightBack for your freedom? The choice is yours to make. Choose wisely."^[Quote is drawn from Rebecca Ballhaus, Joe Palazzolo, and Andrew Restuccia, "Trump and His Allies Set the Stage for Riot Well Before January 6," _The Wall Street Journal_, January 9, 2021.]
+
+Imagine a researcher---we can call her Katherine---who is interested how this kind of rhetoric affects the perceptions of American voters.^[The research example in this chapter is inspired by Clayton et al. [-@clayton2021], though we are providing simplified, simulated data for pedagogical purposes. The hypothetical researcher's first name in inspired by the first author of Clayton et al. [-@clayton2021].] To investigate this question, she enrolls 2,000 research participants in a study. For a modest compensation, these participants agree to read materials provided by the researcher once a month for three months in the lead up to the 2020 Election. After the last month---and shortly before the election occurs---they will complete a survey. The survey will ask several questions about their trust in the election, as well as their support for political violence. For instance, one trust question is, "How confident are you that votes nationwide will be counted as intended in this year’s election?", for which each respondent will indicate that they are "Very," "Somewhat," "Not too," or "Not at all confident." One violence question  is, "How much do you feel it is justified for [respondent's Party, e.g. "Republicans"] to use violence in advancing their political goals these days?", for which the respondent will indicate, "Never," "Occasionally," "Frequently," or "Always." 
+
+Katherine uses random assignment to divide her respondents approximately in half. She calls the first half her "control" condition. The material these respondents will review each month will be a series of real social media messages (tweets) from Donald Trump---but ones chosen specifically to avoid adversarial messages about the upcoming election. For instance, one message says, "Today I spoke with our Nation’s Small Businesses, which employ nearly half of America’s workforce. We are taking the MOST aggressive action in history to deliver fast relief to your businesses and workers. We will always protect our Small Businesses! \@SBAgov." The second half of Katherine's respondents are labelled as belonging to the "Norm Violation" condition. These respondents are shown an equal number of genuine Trump messages, but ones chosen because they cast aspirsions on the integrity of the upcoming election. For instance, one message says, "The Democrats are demanding Mail-In Ballots because the enthusiasm meter for Slow Joe Biden is the lowest in recorded history, and they are concerned that very few people will turn out to vote. Instead, they will search & find people, then “harvest” & return Ballots. Not fair!"
+
+After collecting all her data, Katherine uses her survey to construct two dependent variables for each respondent: one focused on political violence, and one focused on trust in the election. Both variables range from 0-12, with low values indicating low support for violence and low trust in the election (respectively), and high values indicating the opposite.
+
+To analyze her data, Katherine first examines the number of respondents assigned to each of the two randomized conditions. Since her sample includes 2,000 people and there was a 50% chance of assignment to each condition, she expects approximately 1,000 in each condition. 
+
+``` {r}
+df <- read_csv("datasets/norms.csv") 
+
+table(df$tweets) # Examining the number of respondents assigned to each of the randomized conditions.
+```
+
+And that is exactly what she sees. Next, to determine whether exposure to Trump's election-undermining messages affected her dependent measures, Katherine compares the mean value in each of her randomly assigned groups. She begins with her 12-point measure of support for political violence.
+
+``` {r}
+mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"])
+```
+
+The difference is `r round(mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"]),3)`, meaning that respondents assigned to read the norm-violating messages, on average, gave answers that were `r round(mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"]),3)` points higher on the 12-point violence scale.
+
+This result confronts Katherine with a dilemma. What meaning should she make of this result? The people who read norm-violating tweets were more supportive of violence than those who did not. But the difference seems pretty small---just about 1% of the range of her 12-point violence scale. We would never in any case expect the differences between the two randomly assigned groups to be _exactly_ the same. We would expect them to exhibit some chance variation, for the reasons discussed at length starting in Chapter \@ref(parlanceprob). Can Katie claim with any confidence---and if so, how much confidence---that exposing people to norm-violating tweets actually _did_ something?
+
+These questions center on the essence of statistical hypothesis testing. Aside from confidence intervals, covered in Section \@ref(seuse), standard errors can be used to formally test propositions about the world, such as the proposition that highly taxed citizens demand more government accountability than less-taxed citizens [@martin2023], that conservative-leaning parents give their children names with more hard consonant sounds than liberal-leaning parents [@oliver2016], that status-seeking individuals are especially likely to post hostile messages on social media platforms [@bor2021], or that exposing people to norm-violating tweets affect their perceptions of elections. Let's see how it works.
+
+## Hypothesis testing and _modus tollens_ {#modustollens}
+
+Many people assume that statistical hypothesis tests follow a logical structure that goes something like this:
+
+1. "If my theory is true, then I expect data to have a certain attribute, X" (E.g., the "attribute" might be that the mean in one group will be higher than the mean in the other group.) 
+
+2. The data do in fact have attribute X.
+
+3. "Therefore, my theory is confirmed"
+
+That structure has the ring of plausibility. Indeed, many experienced researchers talk about hypothesis testing in a way that suggests that are employing that logical framework. Unfortunately, that setup has a problem, which is that its conclusion (statement 3) does not necessarily follow from the premises (statements 1 and 2). To see why, consider a specific application of the same framework:
+
+1. If Bob jumps in a pool, he will be wet.
+
+2. Bob is wet.
+
+3. Therefore, Bob jumped in a pool.
+
+As before, statement 3 does not follow from the previous two. For instance, Bob could be wet because somebody sprayed him with a hose. This simple example points to a profound problem, which is that data cannot prove any particular hypothesis to be _true_, since it is always possible to construct some alternative hypothesis that would _also_ be consistent with the same data.^[This insight is strongly associated with Karl Popper, a famous philosopher of science who clarified the epistemic role of falsification.]
+
+Take a moment to let the significance of that insight sink in, since it explains an attribute of statistical hypothesis testing that many people find disorienting and counter intuitive, which is that it works via _refutation_, rather than _corroboration_.
+
+Can we use refutation to make progress in testing our ideas? Yes. Consider a third set of statements:
+
+1. If Bob jumps in a pool, he will be wet.
+
+2. Bob is not wet.
+
+3. Therefore, Bob did not jump in a pool.
+
+Here, the third statement _is_ a valid derivation of the first two. We have soundly refuted the idea that Bob jumped in a pool. This derivation is an example of _modus tollens_, one of the cornerstones of propositional reasoning. The conclusion is in some ways more limited: we cannot say what Bob has been doing with his day, for instance. But at least the conclusion rests on valid reasoning.
+
+Statistical hypothesis testing works like the third set of statements. That is, it works not by _corroborating_ particular hypotheses of interest, but rather by _rejecting_ some other, competing hypotheses.
+
+This setup brings us to a key concept, namely the idea of a _null hypothesis_. In a statistical hypothesis test, the null hypothesis is the hypothesis that a research has the potential to reject. Null hypotheses are often pitted against one of more alternative hypotheses of interest to the researcher. But importantly, the researcher accumulates evidence for the alternative hypotheses not by proving them to be true, but rather by demonstrating plausible nulls to be false.
+
+Null hypotheses can take many different forms. All of the following statements could, in principle, serve as a null hypothesis that might be rejected in a particular investigation:
+
+- The average adult man in the United States is 72 inches (6 feet) tall.^[ (This hypothesis would likely be rejected in a good dataset, since the average male height in the United States appears to be about 69 inches tall. See National Center for Health Statistics, "Anthropometric Reference Data for Children and Adults: United States, 2015–2018", available at https://www.cdc.gov/nchs/data/series/sr_03/sr03-046-508.pdf.)]
+
+- The proportion of eligible voters who voted in the most recent presidential election is equal to the proportion who voted in the presidential election before that.
+
+- People who are high in the Conscientiousness personality trait are equally likely to identify as politically conservative as people who are low on this trait [@gerber2010].
+
+The first statement implicitly tests the hypothesis that a population mean is equal to a particular value (72). The next two statements implicitly test hypothesis about whether the mean of one group is higher than the mean of another group. Almost any statement that can be stated in formal mathematical terms can serve as a null hypothesis. However, hypotheses that make comparisons across groups---as in the second two statements above---are the most common. Which brings up back to Katherine's study.
+
+## The null hypothesis of no differences.
+
+Katherine designed her study to test whether reading norm-violating messages from Donald Trump 1) increases support for political violence and 2) decreases trust in the election. These are her alternative hypotheses of interest. We'll start by focusing on the first. Rendered in mathematical terms, it is that the average support for political violence among people randomly assigned to read norm-violating tweets (denoted $\mu_{NormViolating}$) is higher than among people randomly assigned to read "control" tweets (denoted $\mu_{Control}$):
+
+$H_1$: $\mu_{NormViolating} - \mu_{Control} > 0$
+
+The data Katherine collected are consistent with this proposition. As we saw above, the difference in group means is `r round(mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"]),3)`---a positive number. But that is not applying the logic of _modus tollens_. Perhaps we could also arrive at a result of `r round(mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"]),3)` if the tweets had no effect at all, due to simple chance variation.
+
+To apply _modus tollens_, we need a null hypothesis. The typical null hypothesis that one would use in a situation like Katherine's is that the group means _are_ equal, with any difference between them in a particular sample being attributable to chance variation. Null hypotheses are often notated as $H_0$.
+
+$H_0$: $\mu_{NormViolating} - \mu_{Control} = 0$
+
+Notice that $H_0$ is more specific than $H_1$. Whereas an infinite range of values are consistent with $H_1$ (the difference in means can be any positive number), $H_0$ stipulates the difference to be one specific number (0). This makes is easier to assess, which is what we will do next.
+
+## Testing the null {#testnull}
+
+Believe it or not, we have already acquired all the tools needed to test Katherine's null. It is just a matter of seeing how they apply to the present scenario.
+
+First, recognize that the quantity we are examining, the difference in group means, is a statistic. And, we are interested to assess whether the specific value of this statistic that arose in a particular dataset can plausibly be attributed to chance variation. That's the null.
+
+Second, recall from Section \@ref(normdistsection) that statistics calculated from random samples predictably follow a normal distribution. We can use the properties of the Normal Distribution to assess how likely a particular dataset would generate a difference like the one Katherine observed (`r round(mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"]),3)`), supposing the null hypothesis were true. 
+
+``` {r hypoth1, echo = F, message = F, warning = F, fig.cap = "Visualization two plausible results against the Normal Distribution."}
+x_values <- seq(-6, 6, by = 0.01)
+
+normdf <- data.frame(x = x_values, y = dnorm(x_values))
+
+p <- ggplot(normdf, aes(x = x, y = y)) +
+  geom_line() +  # Draw the curve
+  labs(title = "", 
+       x = expression(mu[Norm] - mu[Control]), 
+       y = "Density") +
+  theme_minimal() +
+  annotate("text", x = 1.65, y = 0.389, label = "Result A", hjust = 0, vjust = 1, size = 4) +
+  annotate("curve", x = 2, y = 0.375, xend = .55, yend = 0.35, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) +
+  annotate("text", x = 2.3, y = 0.24, label = "Result B", hjust = 0, vjust = 1, size = 4) +
+  annotate("curve", x = 2.7, y = 0.225, xend = 4, yend = 0.005, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) +
+  scale_x_continuous(breaks = c(0), limits = c(-5,5))  # Set x-axis breaks to only include 0
+
+p
+```
+
+Figure \@ref(fig:hypoth1) illustrates this idea. It shows the _sampling distribution_ for a difference in means, under the null hypothesis. Put differently, it shows the distribution of values we would expect to see for our difference of means **if** the true population difference in means were zero. Naturally, the distribution centers on zero. It has high density at that point and thins out as it moves away from zero in either direction. Suppose Katherine arrived at a result like the one marked "Result A." In this case, she would say, "If the null hypothesis were true, I would see a result like mine quite often. Therefore, I am not comfortable rejecting the null hypothesis." On the other hand, if she arrived at a result like "Result B," she would say, "It is extremely unlikely that I would see a difference in means as big as the one I saw, supposing the null hypothesis were true. The Normal Distribution tells me that it hardly ever happens. Therefore, I am comfortable rejecting the null hypothesis." Notice again that Katherine never directly assess her _own_ hypothesis $H_1$. It's all about the null.
+
+We're getting somewhere, but there's a missing piece: The x-axis in Figure \@ref(fig:hypoth1) doesn't have any value labels. This is because, although we know where to center our Normal Distribution (from how we defined $H_0$), we have not yet considered how wide it should be. That is, we have not yet considered its standard deviation (the only parameter of a Normal Distribution that determines its width; see Section \@ref(normdistsection)). How do we determine how wide a Normal Distribution to use for testing $H_0$? The answer comes from Equation \@ref(eq:meanstder) in Section \@ref(selist). This was the equation for the standard error of a difference of means, where standard error (recall) is defined as the standard deviation of a statistic's sampling distribution. That is, Equation \@ref(eq:meanstder) can be directly used to determine the standard deviation appropriate for the sampling distribution shown in Figure \@ref(fig:hypoth1). Here is how to do it in R:
+
+``` {r}
+s_x <- sd(df$violence[df$tweets=="norm_violate"])
+n <- sum(df$tweets=="norm_violate")
+s_y <- sd(df$violence[df$tweets=="control"])
+m <- sum(df$tweets=="control")
+
+sqrt((s_x^2 / n) + (s_y^2 / m))
+```
+
+``` {r hypoth2, echo = F, message = F, warning = F, fig.cap = "Katherine's result, against her appropriate sampling distribution."}
+x_values <- seq(-.6, .6, by = 0.01)
+
+meandif <- mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"])
+
+sd <- sqrt((s_x^2 / n) + (s_y^2 / m))
+
+normdf <- data.frame(x = x_values, y = dnorm(x_values, sd = sd))
+
+p <- ggplot(normdf, aes(x = x, y = y)) +
+  geom_line() +  # Draw the curve
+  geom_area(data = subset(normdf, x <= meandif*-1), fill = "blue", alpha = 0.5) +
+  geom_area(data = subset(normdf, x >= meandif), fill = "blue", alpha = 0.5) +
+  labs(title = "", 
+       x = expression(mu[Norm] - mu[Control]), 
+       y = "Density") +
+  theme_minimal() +
+    annotate("text", x = .225, y = 2.6, label = "Katherine's Result", hjust = 0, vjust = 1, size = 4) +
+  annotate("curve", x = .4, y = 2.5, xend = meandif, yend = dnorm(meandif, sd = sd), curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) +
+    annotate("text", x = -.55, y = 1.1, label = "19.5% of area", hjust = 0, vjust = 1, size = 4) +
+  annotate("curve", x = -.45, y = 1, xend = -.2, yend = .5, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) + 
+  annotate("text", x = -.45, y = 1.6, label = "19.5% of area", hjust = 0, vjust = 1, size = 4) +
+  annotate("curve", x = -.35, y = 1.5, xend = .2, yend = .5, curvature = 0, arrow = arrow(length = unit(0.1, "inches"))) + 
+    scale_x_continuous(limits = c(-.6,.6))  # Set x-axis breaks to only include 0
+
+
+p
+```
+
+The standard error is `r round(sd,3)`. Using this piece of information, we can now revise Figure \@ref(fig:hypoth1) to apply to Katherine's specific circumstances. Figure \@ref(fig:hypoth2) shows a Normal Distribution with a standard deviation of `r round(sd,3)`. And, it shows where Katherine's specific result would fall against this distribution. (It would have been just as correct for the related arrow to point at the spot `r round(sd,3)` on the x-axis. The x-value is the only relevant thing here.) We can now see visually that, if the null hypothesis were true, it is fairly plausible that we'd see a result like Katherine's. To be more specific, we can use the cumulative distribution function for the Normal distribution (Section \@ref(distsumup)) to calculate the exact probability of seeing a result as extreme as Katherine's supposing $H_0$ were true:
+
+``` {r}
+meandif <- mean(df$violence[df$tweets=="norm_violate"]) - mean(df$violence[df$tweets=="control"]) # Katherine's difference in means
+
+se <- sqrt((s_x^2 / n) + (s_y^2 / m)) # Standard error for the difference in means.
+
+pnorm(meandif * -1, mean = 0, sd = se) # Probability of seeing a difference as extreme as Katherine's in the *negative* direction.
+
+1 - pnorm(meandif, mean = 0, sd = se) # Probability of seeing a difference as extreme as Katherine's in the *positive* direction. (This was knowable in advance, due to symmetry of the Normal Distribution.)
+```
+
+If $H_0$ were true, the probability of seeing a difference as extreme as Katherine's would be `r round(pnorm(meandif * -1, mean = 0, sd = se), 3)` $\times$ 2 $\approx$ `r 2*round(pnorm(meandif * -1, mean = 0, sd = se), 3)`.
+
+That's it! `r 2*round(pnorm(meandif * -1, mean = 0, sd = se), 3)` is the probability of seeing the result as extreme as the one we observed, supposing the null hypothesis to be true. This statistic is known as a p-value.^[We should mention that here we have calculated a _two-tailed_ p-value, meaning we attended to the probability that Katherine would see a result as extreme as she did in _either_ a positive or negative direction. Two-tailed p-values are more common and conventional, but it is also possible to calculate a one-tailed p-value, which attends only to positive or negative deviations from the null. Due to symmetry of the Normal distribution, one-tailed p-values are simply the two-tailed p-value, divided by two.] Here, the p-value implies that if the null hypothesis were true, we'd expect to see a difference in means as distant from zero as Katherine's was nearly 40% of the time. Most people would interpret this result as implying that the null hypothesis is quite plausible and **not** convincingly rejected.
+
+So we can conclude that Katherine's hypothesis that viewing Trump's norm-violating tweets is probably wrong, right? _**NO!**_ If you concluded this, you committed a very common mistake---common even among experienced researchers---of falling for the logical fallacy we discussed in Section \@ref(modustollens). Again, p-values do _not_ directly corroborate hypotheses. They only reject them. The p-value we calculated here tells us the probability that we would observe a result like the one we did _if_ the null were true. It does not directly evaluate Katherine's alternative hypothesis.
+
+## P-values and t-statistics {#pvaltstat}
+
+``` {r, echo = F, eval = T}
+tstat <- meandif / sd
+```
+
+Recall from chapter \@ref(normdistsection) Standard Normal Distribution is the Normal Distribution that has a mean of zero and a standard deviation of 1. To make Figure \@ref(fig:hypoth2), we started with the Standard Normal Distribution, but then adjusted its standard deviation to match Katherine's data. It is equally conventional to do the opposite: adjust the data to match the Standard Normal. To do so, we would divide Katherine's difference-in-means (`r round(meandif ,3)`) by the standard error (`r round(sd,3)`), arriving at the number `r round(tstat ,3)`. This number is called a z-score (since it is a difference that has been standardized by variance). It tells us that Katherine's observed difference in means is `r round(tstat,3)` standard deviations from the mean of the sampling distribution.
+
+Next, recall from Section \@ref(tdistribution) that the t-distribution is a generalization of the Normal Distribution that is more widely used because it applies more reliably when we are dealing with small samples (and it is no worse than the Normal for large samples). Similar the Standard Normal Distribution, the t-distribution takes as an input a standardized difference---the number we calculated in the paragraph above---and converts it to a probability. It just does so in a more general way than the Standard Normal.
+
+For this reason, the standardized difference we calculated---the `r round(tstat,3)`---is not only called a z-score. When it is used in reference to the t-Distribution, it is called a t-statistic. Because the t-Distribution is more general, this is actually the more common labeling.
+
+> A **t-statistic** comes from divided a statistic divided by its standard error, which is conducive to calculating associated probabilities against the t-distribution.
+
+It is important to be familiar with t-statistics, because they are extremely common in statistical results, as we will see next.
+
+## Common approaches to comparing groups
+
+It will probably come as no surprise that it is not necessary to perform all the manual calculations we do above every time we wish to test a hypothesis. This is what statistical software is for. And, R includes several tools that can be used for this purpose. We will review two of them.
+
+One option available to Katherine for determining whether her experiment had a discernible effect on the dependent variable is to estimate a linear regression. As we saw in Section \@ref(reg_one_dummy), a regression with one dummy variable is a convenient way to compare group means.
+
+``` {r}
+fit_violence <- lm(violence ~ as.factor(tweets), data = df)
+summary(fit_violence)
+```
+
+We can now understand these results more deeply than we have so far. As should be familiar by this point, the intercept estimate of 2.215 is the mean value of the dependent variable within the control group. The estimate associated with the dummy variable is the difference in means comparing the control group to the Norm Violation group---exactly what Katherine calculated in Section \@ref(hypothtesting). The Standard error associated with the difference in means (0.139) is the same standard error we calculated in Section \@ref(testnull). The t-value (a synonym for t-statistic), 0.86, is the t-statistic we calculated in Section \@ref(pvaltstat). It also can be calculated almost mentally here, by divided the estimate by the standard error. And finally, the far-right column reports the p-value. The notation (`Pr(>|t|`) means that this column is reporting the probability of observing a t-statistic whose maximum value is as large as 0.86, if the null hypothesis were true. We can manually recover the same value via `2 * pt(q = -0.86, df = 1998)`. (Since the degrees of freedom parameter is much larger than 50, this is nearly equivalent to `2 * pnorm(q = -0.86)`).
+
+What about the standard error and t-statistic associated with the intercept term? The standard error can be recovered via the formula for a standard error of a mean (Section \@ref(selist)). And just as in the paragraph above, the t-statistic of 22.86 comes from dividing the estimate by the standard error. The p-value column reports the probability of observing an intercept term of 2.215 if the null hypothesis (that the true intercept term is zero) were true. Since the estimate is many standard errors away from the mean of the null sampling distribution, the p-value is extremely small.
+
+A second tool that Katherine could use to analyze her results with a t-test, which is a canonical tool used for analyzing difference in means. R's `t.test()` function allows for many arguments appropriate for subtly difference circumstances. Covering them all is beyond our scope. But the form appropriate for Katherine's proble would be:
+
+```{r}
+t.test(violence ~ tweets, data = df, var.equal = TRUE)
+```
+
+The results are identical to those produced in the regression (allowing for 1) that the function has made a different assumption about which mean should be subtracted from which, flipping the sign of the t-statistic and 2) the different ways the functions handle rounding).
+
+## What p-value should I look for?
+
+In the example above, we said that a p-value of .39 was not very compelling evidence against the null hypothesis. So what p-value _would_ constitute strong enough evidence to reject the null hypothesis? The answer is not as straightforward as you might think.
+
+There is a long-standing practice of focusing on 0.05 as an important p-value threshold. When you hear someone boast that their result is "statistically significant," this is probably what they mean: the p-value is less than 0.05. The focus on the 0.05 threshold makes some sense. If we can say that a result had only about a 5% probability to arise by chance, it seems like pretty good evidence against the null.
+
+In recent years however, a lot of evidence has come out showing that singular focus on the 0.05 threshold has had a lot of perverse effects. We'll briefly allude to three of them.
+
+First, the focus on the 0.05 threshold incentivizes researchers to engage in questionable analytical practices. Because researchers long operated under the expectation that they would achieve professional fame and glory if their study had a p-value of 0.04, and not if it had a p-value of 0.06, they commonly ran many different analyses---many different regression specifications, many different exclusion criteria, and so forth---and settled on the one that generated the strongest results [@simonsohn2014]. This practice actually leads to bias, since statistical techniques are being decided based on the outcome, not first principles. Such practices are usually not _fraud_: they often come from good intentions, combined with an unawareness of their systemic effects. But they are problematic nonetheless.
+
+Second, the relentless focus on the 0.05 threshold leads to "publication bias," which is when the set of studies that get published and which receive attention are not representative of underlying scientific truths. Imagine that twenty researchers study the same question---does X affect Y?---with more or less the same research design. And suppose that the true state of affairs is that X does not affect Y---that the null hypothesis is true. Based on how p-values work, we'd expect one of those twenty researchers (i.e. 5% of the researchers) to uncover a statistically significant relationship between X and Y nonetheless. And _that_ study is the one that will be published and get attention. This state of affairs leads some to worry that a surprisingly high proportion of published research findings are---despite researchers' good intentions---false [@ioannidis2005].
+
+Third, the pressure to have statistically significant results can shape what topics researchers choose to study. Based on what you have learned about p-values in this chapter, you might have noticed---might even be able to show via simulation---that, holding the number of observations constant, a study is more likely to have a statistically significant result when the effect size is _large_ than when it is _small_. (For a fuller understanding of this concept, you can read about statistical "power analysis" in another book.) So, researchers have an incentive to study large effects. But small effects can be important---sometimes more important than large ones. For instance, imagine that exposure to a common chemical increases the risk of premature death by 1%. It might be much harder to design a study that will identify this effect that to design a study of a chemical that increases the risk of death by 10%. But if the "small effect" chemical is far more common in the environment than the "large effect" chemical, it could easily be responsible for more deaths.
+
+So what advice can we give as concerns the use and interpretation of p-values? They are important---part of every researcher's toolkit. And, they are a sound way to summarize whether a particular one-off effect is plausibly attributable to chance or not. However, they leave a lot out. In our opinion, a much more informative way to characterize whether a relationship is attributable to chance is to focus on confidence intervals, covered in Section \@ref(seuse). Unlike p-values, confidence intervals orient the reader to consider the magnitude of an effect, as well as the range of plausible effects. If we had our druthers, most studies would give confidence intervals greater attention and prominence than p-values.
+
+``` {r, echo = F, eval = F}
+Note to self: Out of exhaustion I am stopping here. But it the future it would be good to do more on interpretation. E.g., a big statistically insignificant versus a small significant one. Justin Gross's figure.
+```
+
+
+## Activity
+
+The examples throughout this chapter focus on Katherine's `violence` outcome. Conduct a parallel analysis for her `trust` outcome. As part of this exercise,
+
+1. Manually calculate the appropriate difference in means, standard error, t-statistic, and p-values. And, interpret each of these quantities.
+
+2. Replicate the same results using `lm()` and `t.test()`.

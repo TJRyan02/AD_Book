@@ -13,7 +13,7 @@ library(dplyr)
 options(scipen = 999)
 ```
 
-# Putting Standard Errors to Use {#seuse}
+# Putting Standard Errors to Use 1: Confidence Intervals {#seuse}
 
 We allocated an entire chapter to standard errors for two reasons: first because they are interpretable and useful in their own right, and second because they are a crucial ingredient to two other results that data analysts routinely report: confidence intervals and hypothesis tests. This chapter picks up where the previous one left off: by transitioning from a focus on the standard errors themselves to the ways they can be put to use.
 
